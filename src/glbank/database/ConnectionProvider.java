@@ -33,12 +33,13 @@ public class ConnectionProvider {
             Class.forName(DRIVER).newInstance();
         } catch (Exception ex) {
             System.out.println("Error: " + ex.toString());
-        }       
+        }
         return conn;
     }
 
     public boolean isEmployeePasswordValid(String username, String password) {
-        String query = "SELECT idemp FROM LoginEmployee WHERE login LIKE ? AND password LIKE ?";
+        String query = "SELECT idemp FROM LoginEmployee WHERE login LIKE BINARY ? "
+                + "AND password LIKE BINARY ?";
         Connection conn = getConnection();
         boolean result = false;
         if (conn != null) {
@@ -57,8 +58,30 @@ public class ConnectionProvider {
         return false;
     }
 
+    public boolean isEmployeePasswordValid(int idemp, String password) {
+        String query = "SELECT idemp FROM LoginEmployee WHERE idemp LIKE "
+                + "BINARY ? "
+                + "AND password LIKE BINARY ?";
+        Connection conn = getConnection();
+        boolean result;
+        if (conn != null) {
+            try {
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setInt(1, idemp);
+                ps.setString(2, password);
+                ResultSet rs = ps.executeQuery();
+                result = rs.next();
+                conn.close();
+                return result;
+            } catch (SQLException ex) {
+                System.out.println("Error: " + ex.toString());
+            }
+        }
+        return false;
+    }
+
     public int getEmployeeId(String username) {
-        String query = "SELECT idemp FROM LoginEmployee WHERE login LIKE ?";
+        String query = "SELECT idemp FROM LoginEmployee WHERE login LIKE BINARY ?";
         Connection conn = getConnection();
         int id = -1;
 
@@ -105,7 +128,7 @@ public class ConnectionProvider {
     }
 
     public Employee getEmployee(int id) {
-        String query = "SELECT * FROM Employees WHERE empid LIKE ?";
+        String query = "SELECT * FROM Employees WHERE idemp LIKE ?";
         Connection conn = getConnection();
         Employee employee = null;
         if (conn != null) {
@@ -114,7 +137,7 @@ public class ConnectionProvider {
                 ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    employee = new Employee(rs.getInt("empid"),
+                    employee = new Employee(rs.getInt("idemp"),
                             rs.getString("firstname"),
                             rs.getString("lastname"),
                             rs.getString("email"),
@@ -126,6 +149,22 @@ public class ConnectionProvider {
             }
         }
         return employee;
+    }
+
+    public void changePassword(int idemp, String newPassword) {
+        String query = "UPDATE LoginEmployee SET password = ? WHERE idemp LIKE ?";
+        Connection conn = getConnection();
+        if (conn != null) {
+            try(PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, newPassword);
+                ps.setInt(2, idemp);
+                ps.execute();
+                conn.close();
+            }
+            catch(SQLException ex){
+                System.out.println("Error: " + ex.toString());
+            }
+        }
     }
 
 }
