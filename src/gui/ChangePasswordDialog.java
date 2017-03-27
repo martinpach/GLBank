@@ -15,7 +15,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
 
     private int idemp;
 
-    private boolean isNewPasswordValid(String password) {
+    public boolean isNewPasswordValid(String password) {
         password = password.trim();
         int passwordLength = password.length();
         boolean lowerCase = false;
@@ -53,6 +53,10 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         lblMatchError.setVisible(false);
         lblOldPasswordError.setVisible(false);
         lblNewPasswordError.setVisible(false);
+    }
+
+    public ChangePasswordDialog() {
+
     }
 
     /**
