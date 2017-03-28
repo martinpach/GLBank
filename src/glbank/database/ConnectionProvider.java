@@ -17,8 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -196,6 +194,41 @@ public class ConnectionProvider {
             }
         }
         return list;
+    }
+
+    public Client getClientById(int idc) {
+        String query = "SELECT * FROM Clients "
+                + "INNER JOIN ClientDetails ON Clients.idc = ClientDetails.idc "
+                + "INNER JOIN LoginClient ON Clients.idc = LoginClient.idc "
+                + "WHERE Clients.idc = ?";
+        Connection conn = getConnection();
+        Client client = null;
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, idc);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    String firstName = rs.getString("Clients.firstname");
+                    String lastName = rs.getString("Clients.lastname");
+                    String email = rs.getString("ClientDetails.email");
+                    String city = rs.getString("ClientDetails.city");
+                    String postCode = rs.getString("ClientDetails.postcode");
+                    int houseNumber = rs.getInt("ClientDetails.housenumber");
+                    Date dob = rs.getDate("ClientDetails.dob");
+                    boolean blocked = rs.getString("LoginClient.blocked").charAt(0) == 'T';
+                    boolean disable = rs.getString("Clients.disable").charAt(0) == 'T';
+                    String userName = rs.getString("LoginClient.login");
+                    String street = rs.getString("ClientDetails.street");
+
+                    client = new Client(idc, lastName, firstName, email, street,
+                            houseNumber, postCode, userName, disable, blocked, dob, city);
+                }
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("Error: " + ex.toString());
+            }
+        }
+        return client;
     }
 
     public List<String> getClientLogins() {

@@ -57,7 +57,9 @@ public class LoginForm extends javax.swing.JFrame {
 
         txtPassword.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
 
+        btnLogin.setBackground(new java.awt.Color(153, 153, 153));
         btnLogin.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnLogin.setForeground(new java.awt.Color(0, 0, 0));
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,6 +128,7 @@ public class LoginForm extends javax.swing.JFrame {
                 errorMessage.setVisible(false);
                 conn.logEmployeeAccess(conn.getEmployeeId(login));
                 MainForm mainForm = new MainForm(conn.getEmployeeId(login));
+                mainForm.setLocationRelativeTo(null);
                 mainForm.setVisible(true);
                 this.setVisible(false);
             }

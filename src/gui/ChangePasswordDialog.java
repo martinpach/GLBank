@@ -81,6 +81,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         lblNewPasswordError = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel1.setText("Old password:");
@@ -91,6 +92,8 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel3.setText("Confirm new password:");
 
+        btnCancel.setBackground(new java.awt.Color(153, 153, 153));
+        btnCancel.setForeground(new java.awt.Color(0, 0, 0));
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,6 +101,8 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
             }
         });
 
+        btnChangePassword.setBackground(new java.awt.Color(153, 153, 153));
+        btnChangePassword.setForeground(new java.awt.Color(0, 0, 0));
         btnChangePassword.setText("Change password");
         btnChangePassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -162,11 +167,11 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMatchError)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnChangePassword)
                     .addComponent(btnCancel))
-                .addGap(30, 30, 30))
+                .addGap(15, 15, 15))
         );
 
         pack();

@@ -17,7 +17,9 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new LoginForm().setVisible(true);
+        LoginForm loginForm = new LoginForm();
+        loginForm.setLocationRelativeTo(null);
+        loginForm.setVisible(true);
     }
     
 }
