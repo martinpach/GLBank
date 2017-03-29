@@ -97,7 +97,6 @@ public class NewClientDialog extends javax.swing.JDialog {
     private boolean isLoginUnique() {
         ConnectionProvider conn = new ConnectionProvider();
         List<String> allLogins = conn.getClientLogins();
-        System.out.println(allLogins);
         String enteredLogin = txtClientLogin.getText();
         for (String login : allLogins) {
             if (login.equals(enteredLogin)) {

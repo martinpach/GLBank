@@ -139,5 +139,4 @@ public class ConnectionProviderTest {
         // TODO review the generated test code and remove the default call to fail.
     }
     
-    
 }

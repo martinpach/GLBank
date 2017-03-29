@@ -8,6 +8,8 @@ package gui;
 import glbank.Client;
 import glbank.Employee;
 import glbank.database.ConnectionProvider;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 /**
@@ -50,6 +52,8 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     private void showListOfClients() {
+        comboListOfAllClients.removeAllItems();
+        comboListOfAllClients.addItem("Choose:");
         list = new ConnectionProvider().getAllClients();
         if (list != null && list.size() > 0) {
             for (Client client : list) {
@@ -212,6 +216,19 @@ public class MainForm extends javax.swing.JFrame {
         NewClientDialog newClientDialog = new NewClientDialog(this, true);
         newClientDialog.setLocationRelativeTo(null);
         newClientDialog.setVisible(true);
+        
+        // after closing new client dialog the main form is refreshed
+        newClientDialog.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosed(WindowEvent e){
+                try{
+                    initForm();
+                }
+                catch(Exception ex){
+                    
+                }
+            }
+        });
     }//GEN-LAST:event_btnNewClientActionPerformed
 
     private void menuAboutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuAboutMouseClicked
