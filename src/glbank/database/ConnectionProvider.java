@@ -5,6 +5,7 @@
  */
 package glbank.database;
 
+import glbank.Account;
 import glbank.Client;
 import glbank.Employee;
 import java.sql.Connection;
@@ -17,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -292,7 +295,9 @@ public class ConnectionProvider {
         try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, firstName);
             ps.setString(2, lastName);
-            return ps.executeUpdate() == 1;
+            boolean isUpdate = ps.executeUpdate() == 1;
+            conn.close();
+            return isUpdate;
 
         } catch (SQLException ex) {
             System.out.println("insertIntoClients Error: " + ex.toString());
@@ -312,6 +317,7 @@ public class ConnectionProvider {
             if (rs.next()) {
                 idc = rs.getInt("max(idc)");
             }
+            conn.close();
         } catch (SQLException ex) {
             System.out.println("getClientIdc Error: " + ex.toString());
         }
@@ -331,8 +337,9 @@ public class ConnectionProvider {
             ps.setDate(5, (java.sql.Date) dob);
             ps.setString(6, email);
             ps.setString(7, city);
-
-            return ps.executeUpdate() == 1;
+            boolean isUpdate = ps.executeUpdate() == 1;
+            conn.close();
+            return isUpdate;
         } catch (SQLException ex) {
             System.out.println("insertIntoClientDetails Error: " + ex.toString());
         }
@@ -345,11 +352,85 @@ public class ConnectionProvider {
             ps.setInt(1, idc);
             ps.setString(2, login);
             ps.setString(3, password);
-            return ps.executeUpdate() == 1;
+            boolean isUpdate = ps.executeUpdate() == 1;
+            conn.close();
+            return isUpdate;
         } catch (SQLException ex) {
             System.out.println("insertIntoLoginClient Error: " + ex.toString());
         }
         return false;
+    }
+
+    public List<Account> getClientAccounts(int idc) {
+        String query = "SELECT * FROM Accounts WHERE idc LIKE ?";
+        Connection conn = getConnection();
+        List<Account> listOfAccounts = new ArrayList<Account>();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, idc);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Account account = new Account(rs.getLong("idacc"), idc, rs.getFloat("balance"));
+                    listOfAccounts.add(account);
+                }
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("getClientAccounts Error: " + ex.toString());
+            }
+        }
+        return listOfAccounts;
+    }
+
+    public void updateAccountBalance(long idacc, float balance) {
+        String query = "UPDATE Accounts SET balance = balance + ? WHERE idacc = ?";
+        Connection conn = getConnection();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setFloat(1, balance);
+                ps.setLong(2, idacc);
+                ps.executeUpdate();
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("updateAccountBalance Error: " + ex.toString());
+            }
+        }
+    }
+    
+    public boolean addNewAccount(int idc, long accNum){
+        String query = "INSERT INTO Accounts(idc, idacc, balance) VALUES(?,?,0)";
+        Connection conn = getConnection();
+        boolean isUpdate = false;
+        if(conn != null){
+            try(PreparedStatement ps = conn.prepareStatement(query)){
+                ps.setInt(1, idc);
+                ps.setLong(2, accNum);
+                isUpdate = ps.executeUpdate() == 1;
+                conn.close();
+            }
+            catch(SQLException ex){
+                System.out.println("addNewAccount Error: " + ex.toString());
+            }
+        }
+        return isUpdate;
+    }
+    
+    public List<Long> getAllAccountNumbers(){
+        String query = "SELECT idacc FROM Accounts";
+        Connection conn = getConnection();
+        List<Long> accountNumbersList = new ArrayList<Long>();
+        if(conn != null){
+            try(Statement statement = conn.createStatement()){
+                ResultSet rs = statement.executeQuery(query);
+                while(rs.next()){
+                    accountNumbersList.add(rs.getLong("idacc"));
+                }
+                conn.close();
+            }
+            catch(SQLException ex){
+                System.out.println("getAllAccountNumbers Error: " + ex.toString());
+            }
+        }
+        return accountNumbersList;
     }
 
 }

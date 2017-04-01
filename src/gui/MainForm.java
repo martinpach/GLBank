@@ -5,6 +5,9 @@
  */
 package gui;
 
+import gui.panels.ClientInfoPanel;
+import gui.panels.TransactionPanel;
+import gui.panels.ClientAccountsPanel;
 import glbank.Client;
 import glbank.Employee;
 import glbank.database.ConnectionProvider;
@@ -244,7 +247,11 @@ public class MainForm extends javax.swing.JFrame {
             Client selectedClient = list.get(index - 1);
             Client client = new ConnectionProvider().getClientById(selectedClient.getIdc());
             ClientInfoPanel clientInfoPanel = new ClientInfoPanel(client);
+            ClientAccountsPanel clientAccountsPanel = new ClientAccountsPanel(selectedClient.getIdc());
+            TransactionPanel transactionPanel = new TransactionPanel();
             jTabbedPane1.add("Information", clientInfoPanel);
+            jTabbedPane1.add("Accounts", clientAccountsPanel);
+            jTabbedPane1.add("Transaction", transactionPanel);
         }
     }//GEN-LAST:event_comboListOfAllClientsActionPerformed
 
