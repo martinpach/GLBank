@@ -433,13 +433,46 @@ public class ConnectionProvider {
         return accountNumbersList;
     }
     
-    public boolean upDateClientInfo(Client client){
+    public boolean updateClientInfo(Client client){
        String queryClients = "UPDATE Clients SET firstname = ?"
                + ", lastname = ? WHERE idc = ?";
-       String queryClient = "UPDATE ClientDetails SET street = ?,"
+       String queryClientDetails = "UPDATE ClientDetails SET street = ?,"
                + " housenumber = ?, postcode = ?, dob = ?, email = ?, city = ?"
                + " WHERE idc = ?";
-       return false; 
+       boolean isUpdate = false;
+       Connection conn = getConnection();
+       if(conn != null){
+           try{
+               conn.setAutoCommit(false);
+               
+               PreparedStatement psClients = conn.prepareStatement(queryClients);
+               PreparedStatement psClientDetails = conn.prepareStatement(queryClientDetails);
+               
+               psClients.setString(1, client.getFirstName());
+               psClients.setString(2, client.getLastName());
+               psClients.setInt(3, client.getIdc());
+               
+               psClientDetails.setString(1, client.getStreet());
+               psClientDetails.setInt(2, client.getHouseNumber());
+               psClientDetails.setString(3, client.getPostCode());
+               psClientDetails.setDate(4, (java.sql.Date) client.getDob());
+               psClientDetails.setString(5, client.getEmail());
+               psClientDetails.setString(6, client.getCity());
+               psClientDetails.setInt(7, client.getIdc());
+               if(psClients.executeUpdate() == 1 && psClientDetails.executeUpdate() == 1){
+                   isUpdate = true;
+                   conn.commit();
+               }
+               else{
+                   conn.rollback();
+               }
+               conn.close();
+           }
+           catch(SQLException ex){
+               System.out.println("upDateClientInfo Error: " + ex.toString());
+           }
+       }
+       return isUpdate; 
     }
 
 }

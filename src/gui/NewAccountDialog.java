@@ -14,9 +14,11 @@ public class NewAccountDialog extends javax.swing.JDialog {
     /**
      * Creates new form NewAccountDialog
      */
-    public NewAccountDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public NewAccountDialog(java.awt.Frame parent, boolean modal, long accNum) {
+        super(parent, modal); 
         initComponents();
+        lblNewAccountNumber.setText("" + accNum);
+        this.setVisible(true);
     }
 
     /**
@@ -50,9 +52,14 @@ public class NewAccountDialog extends javax.swing.JDialog {
         jLabel3.setText("Balance :");
 
         lblNewAccountBalance.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        lblNewAccountBalance.setText("value");
+        lblNewAccountBalance.setText("0");
 
         btnOkNewAccount.setText("OK");
+        btnOkNewAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOkNewAccountActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,47 +105,10 @@ public class NewAccountDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NewAccountDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NewAccountDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NewAccountDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NewAccountDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnOkNewAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkNewAccountActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnOkNewAccountActionPerformed
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                NewAccountDialog dialog = new NewAccountDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOkNewAccount;

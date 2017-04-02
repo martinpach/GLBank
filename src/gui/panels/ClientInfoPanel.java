@@ -7,7 +7,6 @@ package gui.panels;
 
 import glbank.Client;
 import gui.EditClientInfoDialog;
-import gui.MainForm;
 import javax.swing.JFrame;
 
 /**
@@ -230,7 +229,9 @@ public class ClientInfoPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditClientInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditClientInformationActionPerformed
-        new EditClientInfoDialog((JFrame) this.getRootPane().getParent(), true, client).setVisible(true);
+        EditClientInfoDialog editClientDialog = new EditClientInfoDialog((JFrame) this.getRootPane().getParent(), true, client);
+
+        editClientDialog.setVisible(true);
     }//GEN-LAST:event_btnEditClientInformationActionPerformed
 
 

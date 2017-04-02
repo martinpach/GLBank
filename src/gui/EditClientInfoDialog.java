@@ -6,13 +6,17 @@
 package gui;
 
 import glbank.Client;
+import glbank.database.ConnectionProvider;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Martin
  */
 public class EditClientInfoDialog extends javax.swing.JDialog {
-
+    
     private Client client;
 
     /**
@@ -21,13 +25,14 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
     public EditClientInfoDialog(java.awt.Frame parent, boolean modal, Client client) {
         super(parent, modal);
         initComponents();
+        txtErrorMessage.setVisible(false);
         this.client = client;
         initForm();
     }
-
+    
     private void initForm() {
         txtEditCity.setText(client.getCity());
-        txtEditDob.setText(client.getDob().toString());
+        editedDob.setDate(client.getDob());
         txtEditEmail.setText(client.getEmail());
         txtEditFirstName.setText(client.getFirstName());
         txtEditHouseNumber.setText("" + client.getHouseNumber());
@@ -53,7 +58,6 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
         txtEditLastName = new javax.swing.JTextField();
         txtEditFirstName = new javax.swing.JTextField();
         txtEditEmail = new javax.swing.JTextField();
-        txtEditDob = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -64,8 +68,11 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
         txtEditPostCode = new javax.swing.JTextField();
         btnCancelSubmit = new javax.swing.JButton();
         btnCancelEdit = new javax.swing.JButton();
+        editedDob = new org.jdesktop.swingx.JXDatePicker();
+        txtErrorMessage = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Edit client");
@@ -88,8 +95,6 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
 
         txtEditEmail.setText("jTextField1");
 
-        txtEditDob.setText("jTextField1");
-
         jLabel7.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel7.setText("Street :");
 
@@ -111,8 +116,22 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
         txtEditPostCode.setText("jTextField1");
 
         btnCancelSubmit.setText("Submit");
+        btnCancelSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelSubmitActionPerformed(evt);
+            }
+        });
 
         btnCancelEdit.setText("Cancel");
+        btnCancelEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelEditActionPerformed(evt);
+            }
+        });
+
+        txtErrorMessage.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        txtErrorMessage.setForeground(new java.awt.Color(204, 0, 51));
+        txtErrorMessage.setText("* Please enter all fields!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -123,9 +142,9 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(94, 94, 94)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel6)
@@ -133,19 +152,19 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
                             .addComponent(jLabel3))
                         .addGap(27, 27, 27)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtEditLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEditFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEditEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEditDob, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancelEdit)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtEditLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                                .addComponent(txtEditFirstName, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                                .addComponent(txtEditEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                            .addComponent(editedDob, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtErrorMessage))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnCancelEdit, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCancelSubmit)
@@ -183,24 +202,102 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel11)
-                            .addComponent(txtEditDob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10)
-                            .addComponent(txtEditPostCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtEditPostCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(editedDob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(txtEditStreet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelSubmit)
-                    .addComponent(btnCancelEdit))
+                    .addComponent(btnCancelEdit)
+                    .addComponent(txtErrorMessage))
                 .addGap(16, 16, 16))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnCancelSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelSubmitActionPerformed
+        String editedCity = txtEditCity.getText();
+        
+        Date editedDate = editedDob.getDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String stringDate = dateFormat.format(editedDate);
+        java.sql.Date sqlEditedDob = java.sql.Date.valueOf(stringDate);
+        
+        String editedEmail = txtEditEmail.getText();
+        String editedFirstName = txtEditFirstName.getText();
+        int editedHouseNumber = Integer.parseInt(txtEditHouseNumber.getText());
+        String editedLastName = txtEditLastName.getText();
+        String editedPostCode = txtEditPostCode.getText();
+        String editedStreet = txtEditStreet.getText();
+        
+        if (validateForm()) {
+            txtErrorMessage.setVisible(false);
+            Client editedClient = new Client(client.getIdc(), editedLastName,
+                    editedFirstName, editedEmail, editedStreet, editedCity,
+                    editedHouseNumber, editedPostCode, sqlEditedDob);
+            
+            if (new ConnectionProvider().updateClientInfo(editedClient)) {
+                JOptionPane.showMessageDialog(this, "Client successfuly updated");
+                this.dispose();
+            }
+        } else {
+            txtErrorMessage.setVisible(true);
+        }
+        
+    }//GEN-LAST:event_btnCancelSubmitActionPerformed
+
+    private void btnCancelEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelEditActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelEditActionPerformed
+    
+    private boolean validateForm() {
+        if (isClientCityValid() && isClientDobValid() && isClientFirstNameValid()
+                && isClientLastNameValid() && isClientHouseNumberValid()
+                && isClientPostCodeValid() && isClientStreetValid() && 
+                isClientEmailValid()) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean isClientCityValid() {
+        return !"".equals(txtEditCity.getText().trim());
+    }
+    
+    private boolean isClientDobValid() {
+        return editedDob.getDate() != null;
+    }
+    
+    private boolean isClientFirstNameValid() {
+        return !"".equals(txtEditFirstName.getText().trim());
+    }
+    
+    private boolean isClientLastNameValid() {
+        return !"".equals(txtEditLastName.getText().trim());
+    }
+    
+    private boolean isClientHouseNumberValid() {
+        return !"".equals(txtEditHouseNumber.getText().trim());
+    }
+    
+    private boolean isClientPostCodeValid() {
+        return !"".equals(txtEditPostCode.getText().trim());
+    }
+    
+    private boolean isClientStreetValid() {
+        return !"".equals(txtEditStreet.getText().trim());
+    }
+    
+    private boolean isClientEmailValid() {
+        return !"".equals(txtEditEmail.getText().trim());
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelEdit;
     private javax.swing.JButton btnCancelSubmit;
+    private org.jdesktop.swingx.JXDatePicker editedDob;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -211,12 +308,12 @@ public class EditClientInfoDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JTextField txtEditCity;
-    private javax.swing.JTextField txtEditDob;
     private javax.swing.JTextField txtEditEmail;
     private javax.swing.JTextField txtEditFirstName;
     private javax.swing.JTextField txtEditHouseNumber;
     private javax.swing.JTextField txtEditLastName;
     private javax.swing.JTextField txtEditPostCode;
     private javax.swing.JTextField txtEditStreet;
+    private javax.swing.JLabel txtErrorMessage;
     // End of variables declaration//GEN-END:variables
 }
