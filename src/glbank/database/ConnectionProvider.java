@@ -432,5 +432,14 @@ public class ConnectionProvider {
         }
         return accountNumbersList;
     }
+    
+    public boolean upDateClientInfo(Client client){
+       String queryClients = "UPDATE Clients SET firstname = ?"
+               + ", lastname = ? WHERE idc = ?";
+       String queryClient = "UPDATE ClientDetails SET street = ?,"
+               + " housenumber = ?, postcode = ?, dob = ?, email = ?, city = ?"
+               + " WHERE idc = ?";
+       return false; 
+    }
 
 }
