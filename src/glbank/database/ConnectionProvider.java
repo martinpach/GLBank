@@ -39,7 +39,7 @@ public class ConnectionProvider {
             conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
             Class.forName(DRIVER).newInstance();
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.toString());
+            System.out.println("getConnection Error: " + ex.toString());
         }
         return conn;
     }
@@ -56,10 +56,15 @@ public class ConnectionProvider {
                 ps.setString(2, password);
                 ResultSet rs = ps.executeQuery();
                 result = rs.next();
-                conn.close();
                 return result;
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("isEmployeePasswordValid Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return false;
@@ -78,10 +83,15 @@ public class ConnectionProvider {
                 ps.setString(2, password);
                 ResultSet rs = ps.executeQuery();
                 result = rs.next();
-                conn.close();
                 return result;
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("isEmployeePasswordValid Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return false;
@@ -101,9 +111,15 @@ public class ConnectionProvider {
                 if (rs.next()) {
                     id = rs.getInt("idemp");
                 }
-                conn.close();
+
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("getEmployeeId Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return id;
@@ -120,9 +136,14 @@ public class ConnectionProvider {
                 ps.setInt(1, id);
                 ps.setString(2, date);
                 ps.execute();
-                conn.close();
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("logEmployeeAccess Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -150,9 +171,14 @@ public class ConnectionProvider {
                             rs.getString("email"),
                             rs.getString("position").charAt(0));
                 }
-                conn.close();
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("getEmployee Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return employee;
@@ -166,9 +192,14 @@ public class ConnectionProvider {
                 ps.setString(1, newPassword);
                 ps.setInt(2, idemp);
                 ps.execute();
-                conn.close();
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("changePassword Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -191,9 +222,15 @@ public class ConnectionProvider {
                     Client client = new Client(idc, lastName, firstName, dob);
                     list.add(client);
                 }
-                conn.close();
+
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("getAllClients Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return list;
@@ -226,9 +263,14 @@ public class ConnectionProvider {
                     client = new Client(idc, lastName, firstName, email, street,
                             houseNumber, postCode, userName, disable, blocked, dob, city);
                 }
-                conn.close();
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("getClientById Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return client;
@@ -245,9 +287,14 @@ public class ConnectionProvider {
                     String login = rs.getString("login");
                     list.add(login);
                 }
-                conn.close();
             } catch (SQLException ex) {
-                System.out.println("Error: " + ex.toString());
+                System.out.println("getClientLogins Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return list;
@@ -275,16 +322,24 @@ public class ConnectionProvider {
                         if (insertIntoLoginClient(getClientIdc(firstName, lastName, conn),
                                 userName, password, conn)) {
                             conn.commit();
-                            conn.close();
                             return true;
                         }
                     }
                 }
             }
-            conn.rollback();
-            conn.close();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex1) {
+                Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex1);
+            }
             System.out.println("addClientIntoDatabase Error: " + ex.toString());
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return false;
 
@@ -296,7 +351,6 @@ public class ConnectionProvider {
             ps.setString(1, firstName);
             ps.setString(2, lastName);
             boolean isUpdate = ps.executeUpdate() == 1;
-            conn.close();
             return isUpdate;
 
         } catch (SQLException ex) {
@@ -317,7 +371,6 @@ public class ConnectionProvider {
             if (rs.next()) {
                 idc = rs.getInt("max(idc)");
             }
-            conn.close();
         } catch (SQLException ex) {
             System.out.println("getClientIdc Error: " + ex.toString());
         }
@@ -338,7 +391,6 @@ public class ConnectionProvider {
             ps.setString(6, email);
             ps.setString(7, city);
             boolean isUpdate = ps.executeUpdate() == 1;
-            conn.close();
             return isUpdate;
         } catch (SQLException ex) {
             System.out.println("insertIntoClientDetails Error: " + ex.toString());
@@ -353,7 +405,6 @@ public class ConnectionProvider {
             ps.setString(2, login);
             ps.setString(3, password);
             boolean isUpdate = ps.executeUpdate() == 1;
-            conn.close();
             return isUpdate;
         } catch (SQLException ex) {
             System.out.println("insertIntoLoginClient Error: " + ex.toString());
@@ -373,9 +424,15 @@ public class ConnectionProvider {
                     Account account = new Account(rs.getLong("idacc"), idc, rs.getFloat("balance"));
                     listOfAccounts.add(account);
                 }
-                conn.close();
+
             } catch (SQLException ex) {
                 System.out.println("getClientAccounts Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return listOfAccounts;
@@ -389,45 +446,60 @@ public class ConnectionProvider {
                 ps.setFloat(1, balance);
                 ps.setLong(2, idacc);
                 ps.executeUpdate();
-                conn.close();
+
             } catch (SQLException ex) {
                 System.out.println("updateAccountBalance Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
-    
-    public boolean addNewAccount(int idc, long accNum){
+
+    public boolean addNewAccount(int idc, long accNum) {
         String query = "INSERT INTO Accounts(idc, idacc, balance) VALUES(?,?,0)";
         Connection conn = getConnection();
         boolean isUpdate = false;
-        if(conn != null){
-            try(PreparedStatement ps = conn.prepareStatement(query)){
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, idc);
                 ps.setLong(2, accNum);
                 isUpdate = ps.executeUpdate() == 1;
-                conn.close();
-            }
-            catch(SQLException ex){
+
+            } catch (SQLException ex) {
                 System.out.println("addNewAccount Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return isUpdate;
     }
-    
-    public List<Long> getAllAccountNumbers(){
+
+    public List<Long> getAllAccountNumbers() {
         String query = "SELECT idacc FROM Accounts";
         Connection conn = getConnection();
         List<Long> accountNumbersList = new ArrayList<Long>();
-        if(conn != null){
-            try(Statement statement = conn.createStatement()){
+        if (conn != null) {
+            try (Statement statement = conn.createStatement()) {
                 ResultSet rs = statement.executeQuery(query);
-                while(rs.next()){
+                while (rs.next()) {
                     accountNumbersList.add(rs.getLong("idacc"));
                 }
-                conn.close();
-            }
-            catch(SQLException ex){
+            } catch (SQLException ex) {
                 System.out.println("getAllAccountNumbers Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return accountNumbersList;
