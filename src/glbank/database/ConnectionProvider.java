@@ -461,15 +461,26 @@ public class ConnectionProvider {
                psClientDetails.setInt(7, client.getIdc());
                if(psClients.executeUpdate() == 1 && psClientDetails.executeUpdate() == 1){
                    isUpdate = true;
-                   conn.commit();
                }
                else{
                    conn.rollback();
                }
-               conn.close();
+               
            }
            catch(SQLException ex){
-               System.out.println("upDateClientInfo Error: " + ex.toString());
+               try {
+                   conn.rollback();
+                   System.out.println("upDateClientInfo Error: " + ex.toString());
+               } catch (SQLException ex1) {
+                   Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex1);
+               }
+           }
+           finally{
+               try {
+                   conn.close();
+               } catch (SQLException ex) {
+                   Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+               }
            }
        }
        return isUpdate; 
