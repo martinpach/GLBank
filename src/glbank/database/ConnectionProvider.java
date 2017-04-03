@@ -438,27 +438,6 @@ public class ConnectionProvider {
         return listOfAccounts;
     }
 
-    public void updateAccountBalance(long idacc, float balance) {
-        String query = "UPDATE Accounts SET balance = balance + ? WHERE idacc = ?";
-        Connection conn = getConnection();
-        if (conn != null) {
-            try (PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setFloat(1, balance);
-                ps.setLong(2, idacc);
-                ps.executeUpdate();
-
-            } catch (SQLException ex) {
-                System.out.println("updateAccountBalance Error: " + ex.toString());
-            } finally {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
     public boolean addNewAccount(int idc, long accNum) {
         String query = "INSERT INTO Accounts(idc, idacc, balance) VALUES(?,?,0)";
         Connection conn = getConnection();
@@ -554,27 +533,50 @@ public class ConnectionProvider {
         return isUpdate;
     }
 
-    public void logCashTransaction(int idemp, long idacc, float amount) {
-        if (idemp <= 0 || amount == 0 || idemp == 0) {
-            
+    private boolean updateAccountBalance(long idacc, float amount, Connection conn) throws SQLException {
+        String query = "UPDATE Accounts SET balance = balance + ? WHERE idacc = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setFloat(1, amount);
+        ps.setLong(2, idacc);
+        return ps.executeUpdate() == 1;
+    }
+
+    private boolean logCashTransaction(int idemp, long idacc, float amount, Connection conn) throws SQLException {
+        if (!(idemp <= 0 || amount == 0 || idemp == 0)) {
+            String query = "INSERT INTO CashTransactions(idemp, idacc, amount) "
+                    + "VALUES(?,?,?)";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idemp);
+            ps.setLong(2, idacc);
+            ps.setFloat(3, amount);
+            return ps.executeUpdate() == 1;
         }
-        String query = "INSERT INTO CashTransactions(idemp, idacc, amount, cashdatetime) "
-                + "VALUES(?,?,?,?)";
+        return false;
+    }
+
+    public void addCashToClient(long idacc, int idemp, float amount) {
         Connection conn = getConnection();
-        if (conn != null) {
-            try (PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setInt(1, idemp);
-                ps.setLong(2, idacc);
-                ps.setFloat(3, amount);
-                ps.executeUpdate();
+        try {
+            conn.setAutoCommit(false);
+            if (updateAccountBalance(idacc, amount, conn) && logCashTransaction(idemp, idacc, amount, conn)) {
+                conn.commit();
+            }
+            else{
+                conn.rollback();
+            }
+        } catch (SQLException ex) {
+            System.out.println("addCashToClient Error: " + ex.toString());
+            try {
+                conn.rollback();
+            } catch (SQLException ex1) {
+                Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } finally {
+            try {
+                conn.close();
             } catch (SQLException ex) {
-                System.out.println("logCashTransaction Error: " + ex.toString());
-            } finally {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

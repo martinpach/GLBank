@@ -67,7 +67,9 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
             if ((mark == -1 && accountsList.get(selectedAccountIndex).getBalance() > Math.abs(value))
                     || mark == 1) {
                 long selectedAccountId = accountsList.get(selectedAccountIndex).getIdacc();
-                new ConnectionProvider().updateAccountBalance(selectedAccountId, value);
+                
+                //updating in database
+                new ConnectionProvider().addCashToClient(selectedAccountId, idemp, value);
                 showListOfAccounts();
                 showAccountBalance(selectedAccountIndex);
             }
@@ -212,8 +214,6 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private void btnSubMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubMoneyActionPerformed
         updateBalance(-1);
-        new ConnectionProvider().logCashTransaction(idemp, 
-                accountsList.get(selectedAccountIndex).getIdacc(), value);
     }//GEN-LAST:event_btnSubMoneyActionPerformed
 
     private void btnAddMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddMoneyActionPerformed
