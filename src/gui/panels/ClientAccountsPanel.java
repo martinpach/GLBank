@@ -10,6 +10,7 @@ import glbank.database.ConnectionProvider;
 import gui.NewAccountDialog;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.swing.JFrame;
 
 /**
  *
@@ -207,10 +208,11 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddMoneyActionPerformed
 
     private void btnAddNewAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewAccountActionPerformed
-        if (new ConnectionProvider().addNewAccount(idc, generateRandomAccountNumber())) {
+        long randomAccNum =  generateRandomAccountNumber();
+        if (new ConnectionProvider().addNewAccount(idc, randomAccNum)) {
             showListOfAccounts();
             showAccountBalance(selectedAccountIndex);
-            System.out.println("Account successfuly added");
+            new NewAccountDialog((JFrame) this.getRootPane().getParent(), true, randomAccNum);
         }
     }//GEN-LAST:event_btnAddNewAccountActionPerformed
 

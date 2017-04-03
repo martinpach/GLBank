@@ -57,6 +57,20 @@ public class Client {
         this.blocked = false;
     }
 
+    public Client(int idc, String lastName, String firstName, String email, String street, String city, int houseNumber, String postCode, Date dob) {
+        this.idc = idc;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.email = email;
+        this.street = street;
+        this.city = city;
+        this.houseNumber = houseNumber;
+        this.postCode = postCode;
+        this.dob = dob;
+    }
+
+    
+    
     public int getIdc() {
         return idc;
     }

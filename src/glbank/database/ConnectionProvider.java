@@ -505,4 +505,54 @@ public class ConnectionProvider {
         return accountNumbersList;
     }
 
+    public boolean updateClientInfo(Client client) {
+        String queryClients = "UPDATE Clients SET firstname = ?"
+                + ", lastname = ? WHERE idc = ?";
+        String queryClientDetails = "UPDATE ClientDetails SET street = ?,"
+                + " housenumber = ?, postcode = ?, dob = ?, email = ?, city = ?"
+                + " WHERE idc = ?";
+        boolean isUpdate = false;
+        Connection conn = getConnection();
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(false);
+
+                PreparedStatement psClients = conn.prepareStatement(queryClients);
+                PreparedStatement psClientDetails = conn.prepareStatement(queryClientDetails);
+
+                psClients.setString(1, client.getFirstName());
+                psClients.setString(2, client.getLastName());
+                psClients.setInt(3, client.getIdc());
+
+                psClientDetails.setString(1, client.getStreet());
+                psClientDetails.setInt(2, client.getHouseNumber());
+                psClientDetails.setString(3, client.getPostCode());
+                psClientDetails.setDate(4, (java.sql.Date) client.getDob());
+                psClientDetails.setString(5, client.getEmail());
+                psClientDetails.setString(6, client.getCity());
+                psClientDetails.setInt(7, client.getIdc());
+                if (psClients.executeUpdate() == 1 && psClientDetails.executeUpdate() == 1) {
+                    isUpdate = true;
+                } else {
+                    conn.rollback();
+                }
+
+            } catch (SQLException ex) {
+                try {
+                    conn.rollback();
+                    System.out.println("upDateClientInfo Error: " + ex.toString());
+                } catch (SQLException ex1) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return isUpdate;
+    }
+
 }

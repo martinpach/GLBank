@@ -6,13 +6,15 @@
 package gui.panels;
 
 import glbank.Client;
+import gui.EditClientInfoDialog;
+import javax.swing.JFrame;
 
 /**
  *
  * @author Martin
  */
 public class ClientInfoPanel extends javax.swing.JPanel {
-    
+
     private Client client;
 
     /**
@@ -23,7 +25,7 @@ public class ClientInfoPanel extends javax.swing.JPanel {
         this.client = client;
         setInformationAboutSelectedClient();
     }
-    
+
     private void setInformationAboutSelectedClient() {
         lblCity.setText(client.getCity());
         lblClientId.setText("" + client.getIdc());
@@ -128,6 +130,11 @@ public class ClientInfoPanel extends javax.swing.JPanel {
         lblPostCode.setText("postcode");
 
         btnEditClientInformation.setText("Edit");
+        btnEditClientInformation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditClientInformationActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -220,6 +227,12 @@ public class ClientInfoPanel extends javax.swing.JPanel {
                 .addContainerGap(40, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEditClientInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditClientInformationActionPerformed
+        EditClientInfoDialog editClientDialog = new EditClientInfoDialog((JFrame) this.getRootPane().getParent(), true, client);
+
+        editClientDialog.setVisible(true);
+    }//GEN-LAST:event_btnEditClientInformationActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
