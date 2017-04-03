@@ -468,7 +468,6 @@ public class ConnectionProvider {
                 ps.setInt(1, idc);
                 ps.setLong(2, accNum);
                 isUpdate = ps.executeUpdate() == 1;
-
             } catch (SQLException ex) {
                 System.out.println("addNewAccount Error: " + ex.toString());
             } finally {
@@ -555,4 +554,28 @@ public class ConnectionProvider {
         return isUpdate;
     }
 
+    public void logCashTransaction(int idemp, long idacc, float amount) {
+        if (idemp <= 0 || amount == 0 || idemp == 0) {
+            
+        }
+        String query = "INSERT INTO CashTransactions(idemp, idacc, amount, cashdatetime) "
+                + "VALUES(?,?,?,?)";
+        Connection conn = getConnection();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, idemp);
+                ps.setLong(2, idacc);
+                ps.setFloat(3, amount);
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println("logCashTransaction Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
 }

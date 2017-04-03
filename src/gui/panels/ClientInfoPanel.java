@@ -230,7 +230,8 @@ public class ClientInfoPanel extends javax.swing.JPanel {
 
     private void btnEditClientInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditClientInformationActionPerformed
         EditClientInfoDialog editClientDialog = new EditClientInfoDialog((JFrame) this.getRootPane().getParent(), true, client);
-
+        
+        editClientDialog.setLocationRelativeTo(null);
         editClientDialog.setVisible(true);
     }//GEN-LAST:event_btnEditClientInformationActionPerformed
 
