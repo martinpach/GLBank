@@ -17,8 +17,7 @@ public class NewAccountDialog extends javax.swing.JDialog {
     public NewAccountDialog(java.awt.Frame parent, boolean modal, long accNum) {
         super(parent, modal); 
         initComponents();
-        lblNewAccountNumber.setText("" + accNum);
-        this.setVisible(true);
+        lblNewAccountNumber.setText("" + accNum);        
     }
 
     /**

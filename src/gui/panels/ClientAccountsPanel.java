@@ -19,15 +19,18 @@ import javax.swing.JFrame;
 public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private int idc;
+    private int idemp;
+    private float value;
     private int selectedAccountIndex;
     private List<Account> accountsList;
 
     /**
      * Creates new form ClientAccountPanel
      */
-    public ClientAccountsPanel(int idc) {
+    public ClientAccountsPanel(int idc, int idemp) {
         initComponents();
         this.idc = idc;
+        this.idemp = idemp;
         showListOfAccounts();
         lblBalanceValue.setText("");
         selectedAccountIndex = comboBoxAccountId.getSelectedIndex();
@@ -55,11 +58,19 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private void updateBalance(int mark) {
         if (comboBoxAccountId.getItemCount() != 0 && !"".equals(txtAdditionalValue.getText())) {
-            float value = mark * Float.parseFloat(txtAdditionalValue.getText());
-            long selectedAccountId = accountsList.get(selectedAccountIndex).getIdacc();
-            new ConnectionProvider().updateAccountBalance(selectedAccountId, value);
-            showListOfAccounts();
-            showAccountBalance(selectedAccountIndex);
+            try {
+                value = mark * Float.parseFloat(txtAdditionalValue.getText());
+            } catch (Exception ex) {
+                value = 0;
+            }
+            value = (float) Math.round(value * 100) / 100;
+            if ((mark == -1 && accountsList.get(selectedAccountIndex).getBalance() > Math.abs(value))
+                    || mark == 1) {
+                long selectedAccountId = accountsList.get(selectedAccountIndex).getIdacc();
+                new ConnectionProvider().updateAccountBalance(selectedAccountId, value);
+                showListOfAccounts();
+                showAccountBalance(selectedAccountIndex);
+            }
         }
     }
 
@@ -201,6 +212,8 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private void btnSubMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubMoneyActionPerformed
         updateBalance(-1);
+        new ConnectionProvider().logCashTransaction(idemp, 
+                accountsList.get(selectedAccountIndex).getIdacc(), value);
     }//GEN-LAST:event_btnSubMoneyActionPerformed
 
     private void btnAddMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddMoneyActionPerformed
@@ -208,11 +221,14 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddMoneyActionPerformed
 
     private void btnAddNewAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewAccountActionPerformed
-        long randomAccNum =  generateRandomAccountNumber();
+        long randomAccNum = generateRandomAccountNumber();
         if (new ConnectionProvider().addNewAccount(idc, randomAccNum)) {
             showListOfAccounts();
             showAccountBalance(selectedAccountIndex);
-            new NewAccountDialog((JFrame) this.getRootPane().getParent(), true, randomAccNum);
+            NewAccountDialog newAccDialog = new NewAccountDialog((JFrame) this.getRootPane().getParent(), true, randomAccNum);
+            newAccDialog.setLocationRelativeTo(null);
+            newAccDialog.setVisible(true);
+
         }
     }//GEN-LAST:event_btnAddNewAccountActionPerformed
 
