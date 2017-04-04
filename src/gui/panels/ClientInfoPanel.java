@@ -6,7 +6,10 @@
 package gui.panels;
 
 import glbank.Client;
+import glbank.database.ConnectionProvider;
 import gui.EditClientInfoDialog;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 /**
@@ -16,17 +19,19 @@ import javax.swing.JFrame;
 public class ClientInfoPanel extends javax.swing.JPanel {
 
     private Client client;
+    private int idc;
 
     /**
      * Creates new form ClientInfoPanel
      */
-    public ClientInfoPanel(Client client) {
+    public ClientInfoPanel(int idc) {
         initComponents();
-        this.client = client;
+        this.idc = idc;
         setInformationAboutSelectedClient();
     }
 
     private void setInformationAboutSelectedClient() {
+        client = new ConnectionProvider().getClientById(idc);
         lblCity.setText(client.getCity());
         lblClientId.setText("" + client.getIdc());
         lblDob.setText("" + client.getDob());
@@ -230,7 +235,17 @@ public class ClientInfoPanel extends javax.swing.JPanel {
 
     private void btnEditClientInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditClientInformationActionPerformed
         EditClientInfoDialog editClientDialog = new EditClientInfoDialog((JFrame) this.getRootPane().getParent(), true, client);
-        
+        editClientDialog.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosed(WindowEvent e){
+                try{
+                    setInformationAboutSelectedClient();
+                }
+                catch(Exception ex){
+                    
+                }
+            }
+        });
         editClientDialog.setLocationRelativeTo(null);
         editClientDialog.setVisible(true);
     }//GEN-LAST:event_btnEditClientInformationActionPerformed

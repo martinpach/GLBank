@@ -511,6 +511,7 @@ public class ConnectionProvider {
                 psClientDetails.setInt(7, client.getIdc());
                 if (psClients.executeUpdate() == 1 && psClientDetails.executeUpdate() == 1) {
                     isUpdate = true;
+                    conn.commit();
                 } else {
                     conn.rollback();
                 }
