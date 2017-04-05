@@ -6,6 +6,7 @@
 package gui.panels;
 
 import glbank.Account;
+import glbank.Card;
 import glbank.database.ConnectionProvider;
 import gui.NewAccountDialog;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     private float value;
     private int selectedAccountIndex;
     private List<Account> accountsList;
+    private List<Card> cardsList;
 
     /**
      * Creates new form ClientAccountPanel
@@ -32,6 +34,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         this.idc = idc;
         this.idemp = idemp;
         showListOfAccounts();
+        showListOfCards();
         lblBalanceValue.setText("");
         selectedAccountIndex = comboBoxAccountId.getSelectedIndex();
         showAccountBalance(selectedAccountIndex);
@@ -67,7 +70,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
             if ((mark == -1 && accountsList.get(selectedAccountIndex).getBalance() > Math.abs(value))
                     || mark == 1) {
                 long selectedAccountId = accountsList.get(selectedAccountIndex).getIdacc();
-                
+
                 //updating in database
                 new ConnectionProvider().addCashToClient(selectedAccountId, idemp, value);
                 showListOfAccounts();
@@ -94,6 +97,43 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         return randomAccNum;
     }
 
+    private long generateRandomCardNumber() {
+        boolean isUnique = false;
+        long randomCardNumber;
+        List<Long> allCardNumbers = new ConnectionProvider().getAllCardNumbers();
+        if (!allCardNumbers.isEmpty()) {
+            do {
+                randomCardNumber = ThreadLocalRandom.current().nextLong(100000000, 900000000) * 10000000;
+                for (long cardNumber : allCardNumbers) {
+                    if (randomCardNumber == cardNumber) {
+                        isUnique = false;
+                        break;
+                    }
+                    isUnique = true;
+                }
+            } while (isUnique == false);
+        }
+        else{
+            randomCardNumber = ThreadLocalRandom.current().nextLong(100000000, 900000000) * 10000000;
+        }
+        return randomCardNumber;
+    }
+
+    private int generateRandomPin() {
+        return ThreadLocalRandom.current().nextInt(1000, 9999 + 1);
+    }
+
+    private void showListOfCards() {
+        comboBoxCards.removeAllItems();
+        cardsList = new ConnectionProvider().getClientCards(accountsList.get(selectedAccountIndex).getIdacc());
+        if (!cardsList.isEmpty()) {
+            for (Card card : cardsList) {
+                String blocked = card.isBlocked() ? "[BLOCKED]" : "[ACTIVE]";
+                comboBoxCards.addItem("" + card.getCardNumber() + " " + blocked);
+            }
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -112,6 +152,11 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         btnAddMoney = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         btnAddNewAccount = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        comboBoxCards = new javax.swing.JComboBox<>();
+        btnEditCard = new javax.swing.JButton();
+        btnAddCard = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel1.setText("Account id :");
@@ -152,64 +197,96 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel3.setText("Cards :");
+
+        btnEditCard.setText("Edit card");
+
+        btnAddCard.setText("Add new card");
+        btnAddCard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddCardActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(lblBalanceValue)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnSubMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(38, 38, 38)
-                                        .addComponent(btnAddMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(139, 139, 139))
+                                .addComponent(btnAddCard)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnEditCard))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(comboBoxAccountId, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
-                                .addComponent(jLabel4)
-                                .addGap(156, 156, 156))))
+                                .addGap(142, 142, 142)
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(comboBoxCards, 0, 246, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAddNewAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(469, 469, 469))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(140, 140, 140)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addComponent(jLabel4))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnSubMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(38, 38, 38)
+                                .addComponent(btnAddMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnAddNewAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(35, 35, 35))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(110, 110, 110)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(comboBoxAccountId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel3)
+                    .addComponent(comboBoxCards, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(lblBalanceValue)
-                    .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnEditCard)
+                    .addComponent(btnAddCard))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(jLabel4)
+                .addGap(18, 18, 18)
+                .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSubMoney)
-                    .addComponent(btnAddMoney))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAddNewAccount)
-                .addContainerGap(42, Short.MAX_VALUE))
+                    .addComponent(btnAddMoney)
+                    .addComponent(btnAddNewAccount))
+                .addGap(35, 35, 35))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void comboBoxAccountIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxAccountIdActionPerformed
         selectedAccountIndex = comboBoxAccountId.getSelectedIndex();
         showAccountBalance(selectedAccountIndex);
+        showListOfCards();
     }//GEN-LAST:event_comboBoxAccountIdActionPerformed
 
     private void btnSubMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubMoneyActionPerformed
@@ -232,15 +309,28 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnAddNewAccountActionPerformed
 
+    private void btnAddCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCardActionPerformed
+        long idacc = accountsList.get(selectedAccountIndex).getIdacc();
+
+        new ConnectionProvider().addNewCard(generateRandomCardNumber(),
+                idacc, generateRandomPin());
+        showListOfCards();
+    }//GEN-LAST:event_btnAddCardActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddCard;
     private javax.swing.JButton btnAddMoney;
     private javax.swing.JButton btnAddNewAccount;
+    private javax.swing.JButton btnEditCard;
     private javax.swing.JButton btnSubMoney;
     private javax.swing.JComboBox<String> comboBoxAccountId;
+    private javax.swing.JComboBox<String> comboBoxCards;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblBalanceValue;
     private javax.swing.JTextField txtAdditionalValue;
     // End of variables declaration//GEN-END:variables

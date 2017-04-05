@@ -6,6 +6,7 @@
 package glbank.database;
 
 import glbank.Account;
+import glbank.Card;
 import glbank.Client;
 import glbank.Employee;
 import java.sql.Connection;
@@ -580,5 +581,83 @@ public class ConnectionProvider {
                 Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    public boolean addNewCard(long cardnumber, long idacc, int pincode){
+        String query = "INSERT INTO BankCards(cardnumber, idacc, pincode) "
+                + "VALUES(?,?,?)";
+        Connection conn = getConnection();
+        if(conn != null){
+            try(PreparedStatement ps = conn.prepareStatement(query)){
+                ps.setLong(1, cardnumber);
+                ps.setLong(2, idacc);
+                ps.setInt(3, pincode);
+                return ps.executeUpdate() == 1;
+            }
+            catch(SQLException ex){
+                 System.out.println("addNewCard Error: " + ex.toString());
+            }
+            finally{
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return false;
+    }
+    
+    public List<Long> getAllCardNumbers(){
+        String query = "SELECT cardnumber FROM BankCards";
+        Connection conn = getConnection();
+        List<Long> cardNumbersList = new ArrayList<Long>();
+        if (conn != null) {
+            try (Statement statement = conn.createStatement()) {
+                ResultSet rs = statement.executeQuery(query);
+                while (rs.next()) {
+                    cardNumbersList.add(rs.getLong("cardnumber"));
+                }
+            } catch (SQLException ex) {
+                System.out.println("getAllCardNumbers Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return cardNumbersList;
+    }
+    
+    public List<Card> getClientCards(long idacc){
+        String query = "SELECT * FROM BankCards WHERE idacc LIKE ?";
+        Connection conn = getConnection();
+        List<Card> listOfCards = new ArrayList<>();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setLong(1, idacc);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    int idCard = rs.getInt("idcard");
+                    long cardNumber = rs.getLong("cardnumber");
+                    boolean blocked = rs.getString("blocked").charAt(0) == 'T';
+                    int pinCode = rs.getInt("pincode");
+                    Card card = new Card(idCard, cardNumber, idacc, blocked, pinCode);
+                    listOfCards.add(card);
+                }
+
+            } catch (SQLException ex) {
+                System.out.println("getClientCards Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return listOfCards;
     }
 }
