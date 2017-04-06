@@ -5,18 +5,35 @@
  */
 package gui;
 
+import glbank.Card;
+import glbank.database.ConnectionProvider;
+
 /**
  *
  * @author Martin
  */
 public class EditCardDialog extends javax.swing.JDialog {
 
+    private Card card;
+
     /**
      * Creates new form EditCardDialog
      */
-    public EditCardDialog(java.awt.Frame parent, boolean modal) {
+    public EditCardDialog(java.awt.Frame parent, boolean modal, Card card) {
         super(parent, modal);
         initComponents();
+        this.card = card;
+        initForm();
+    }
+
+    private void initForm() {
+        lblInvalidPin.setVisible(false);
+        if (card.isBlocked()) {
+            btnBlockUnblock.setText("Unblock");
+        } else {
+            btnBlockUnblock.setText("Block");
+        }
+        txtEditPin.setText("" + card.getPincode());
     }
 
     /**
@@ -28,15 +45,16 @@ public class EditCardDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtEditPin = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        comboEditCardAccNum = new javax.swing.JComboBox<>();
-        btnUnblockCard = new javax.swing.JButton();
-        btnBlock = new javax.swing.JButton();
+        btnBlockUnblock = new javax.swing.JButton();
         btnConfirmEditCard = new javax.swing.JButton();
         btnCancelEditCard = new javax.swing.JButton();
+        lblInvalidPin = new javax.swing.JLabel();
+
+        jLabel3.setText("jLabel3");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -47,124 +65,110 @@ public class EditCardDialog extends javax.swing.JDialog {
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel2.setText("Pin :");
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel3.setText("Account :");
-
-        btnUnblockCard.setText("Unblock");
-
-        btnBlock.setText("Block");
+        btnBlockUnblock.setText("Block");
+        btnBlockUnblock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBlockUnblockActionPerformed(evt);
+            }
+        });
 
         btnConfirmEditCard.setText("Confirm");
+        btnConfirmEditCard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmEditCardActionPerformed(evt);
+            }
+        });
 
         btnCancelEditCard.setText("Cancel");
+        btnCancelEditCard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelEditCardActionPerformed(evt);
+            }
+        });
+
+        lblInvalidPin.setForeground(new java.awt.Color(204, 0, 51));
+        lblInvalidPin.setText("Invalid pin!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(137, 137, 137))
             .addGroup(layout.createSequentialGroup()
-                .addGap(80, 80, 80)
+                .addGap(72, 72, 72)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnCancelEditCard)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnConfirmEditCard, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnBlockUnblock)
+                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2))
+                        .addComponent(jLabel2)
                         .addGap(38, 38, 38)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtEditPin, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(comboEditCardAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnUnblockCard)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBlock)))
-                .addContainerGap(61, Short.MAX_VALUE))
+                            .addComponent(lblInvalidPin)
+                            .addComponent(txtEditPin, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addGap(46, 46, 46)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtEditPin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(comboEditCardAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnUnblockCard)
-                    .addComponent(btnBlock))
-                .addGap(28, 28, 28)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblInvalidPin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnBlockUnblock)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnConfirmEditCard)
                     .addComponent(btnCancelEditCard))
-                .addGap(23, 23, 23))
+                .addGap(30, 30, 30))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(EditCardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(EditCardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(EditCardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(EditCardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnCancelEditCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelEditCardActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelEditCardActionPerformed
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                EditCardDialog dialog = new EditCardDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+    private void btnBlockUnblockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBlockUnblockActionPerformed
+        if (card.isBlocked()) {
+            card.setBlocked(false);
+            btnBlockUnblock.setText("Block");
+        } else {
+            card.setBlocked(true);
+            btnBlockUnblock.setText("Unblock");
+        }
+    }//GEN-LAST:event_btnBlockUnblockActionPerformed
+
+    private void btnConfirmEditCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditCardActionPerformed
+        String pin = txtEditPin.getText();
+        if(pin.trim().length() == 4){
+            lblInvalidPin.setVisible(false);
+            card.setPincode(Integer.parseInt(pin));
+            new ConnectionProvider().updateClientCard(card);
+            this.dispose();
+        }
+        else{
+            lblInvalidPin.setVisible(true);
+        }
+    }//GEN-LAST:event_btnConfirmEditCardActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBlock;
+    private javax.swing.JButton btnBlockUnblock;
     private javax.swing.JButton btnCancelEditCard;
     private javax.swing.JButton btnConfirmEditCard;
-    private javax.swing.JButton btnUnblockCard;
-    private javax.swing.JComboBox<String> comboEditCardAccNum;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel lblInvalidPin;
     private javax.swing.JTextField txtEditPin;
     // End of variables declaration//GEN-END:variables
 }

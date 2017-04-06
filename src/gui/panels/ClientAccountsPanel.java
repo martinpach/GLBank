@@ -8,7 +8,10 @@ package gui.panels;
 import glbank.Account;
 import glbank.Card;
 import glbank.database.ConnectionProvider;
+import gui.EditCardDialog;
 import gui.NewAccountDialog;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.JFrame;
@@ -25,6 +28,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     private int selectedAccountIndex;
     private List<Account> accountsList;
     private List<Card> cardsList;
+    private Card selectedCard;
 
     /**
      * Creates new form ClientAccountPanel
@@ -72,9 +76,10 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
                 long selectedAccountId = accountsList.get(selectedAccountIndex).getIdacc();
 
                 //updating in database
-                new ConnectionProvider().addCashToClient(selectedAccountId, idemp, value);
-                showListOfAccounts();
-                showAccountBalance(selectedAccountIndex);
+                ConnectionProvider conn = new ConnectionProvider();
+                conn.addCashToClient(selectedAccountId, idemp, value);
+                accountsList.get(selectedAccountIndex).setBalance(conn.getAccountBalance(selectedAccountId));
+                showAccountBalance(selectedAccountIndex);   
             }
         }
     }
@@ -112,8 +117,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
                     isUnique = true;
                 }
             } while (isUnique == false);
-        }
-        else{
+        } else {
             randomCardNumber = ThreadLocalRandom.current().nextLong(100000000, 900000000) * 10000000;
         }
         return randomCardNumber;
@@ -125,13 +129,16 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private void showListOfCards() {
         comboBoxCards.removeAllItems();
-        cardsList = new ConnectionProvider().getClientCards(accountsList.get(selectedAccountIndex).getIdacc());
-        if (!cardsList.isEmpty()) {
-            for (Card card : cardsList) {
-                String blocked = card.isBlocked() ? "[BLOCKED]" : "[ACTIVE]";
-                comboBoxCards.addItem("" + card.getCardNumber() + " " + blocked);
+        if (!accountsList.isEmpty() && selectedAccountIndex != -1) {
+            cardsList = new ConnectionProvider().getClientCards(accountsList.get(selectedAccountIndex).getIdacc());
+            if (!cardsList.isEmpty()) {
+                for (Card card : cardsList) {
+                    String blocked = card.isBlocked() ? "[BLOCKED]" : "[ACTIVE]";
+                    comboBoxCards.addItem("" + card.getCardNumber() + " " + blocked);
+                }
             }
         }
+
     }
 
     /**
@@ -200,7 +207,18 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel3.setText("Cards :");
 
+        comboBoxCards.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxCardsActionPerformed(evt);
+            }
+        });
+
         btnEditCard.setText("Edit card");
+        btnEditCard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditCardActionPerformed(evt);
+            }
+        });
 
         btnAddCard.setText("Add new card");
         btnAddCard.addActionListener(new java.awt.event.ActionListener() {
@@ -291,6 +309,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
 
     private void btnSubMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubMoneyActionPerformed
         updateBalance(-1);
+        
     }//GEN-LAST:event_btnSubMoneyActionPerformed
 
     private void btnAddMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddMoneyActionPerformed
@@ -310,12 +329,42 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddNewAccountActionPerformed
 
     private void btnAddCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCardActionPerformed
-        long idacc = accountsList.get(selectedAccountIndex).getIdacc();
+        if (!accountsList.isEmpty()) {
+            long idacc = accountsList.get(selectedAccountIndex).getIdacc();
 
-        new ConnectionProvider().addNewCard(generateRandomCardNumber(),
-                idacc, generateRandomPin());
-        showListOfCards();
+            new ConnectionProvider().addNewCard(generateRandomCardNumber(),
+                    idacc, generateRandomPin());
+            showListOfCards();
+        }
     }//GEN-LAST:event_btnAddCardActionPerformed
+
+    private void btnEditCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditCardActionPerformed
+        if (selectedCard != null) {
+            EditCardDialog editCard = new EditCardDialog((JFrame) this.getRootPane().getParent(), true, selectedCard);
+            editCard.setLocationRelativeTo(null);
+            editCard.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosed(WindowEvent e){
+                try{
+                    showListOfCards();
+                }
+                catch(Exception ex){
+                    
+                }
+            }
+        });
+            editCard.setVisible(true);
+        }
+    }//GEN-LAST:event_btnEditCardActionPerformed
+
+    private void comboBoxCardsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxCardsActionPerformed
+        if (comboBoxCards.getItemCount() != 0) {
+            int index = comboBoxCards.getSelectedIndex();
+            selectedCard = cardsList.get(index);
+        } else {
+            selectedCard = null;
+        }
+    }//GEN-LAST:event_comboBoxCardsActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

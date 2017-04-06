@@ -543,6 +543,27 @@ public class ConnectionProvider {
         return ps.executeUpdate() == 1;
     }
 
+    public float getAccountBalance(long idacc) {
+        String query = "SELECT balance FROM Accounts WHERE idacc = ?";
+        Connection conn = getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setLong(1, idacc);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getFloat("balance");
+            }
+        } catch (SQLException ex) {
+            System.out.println("getAccountBalance Error: " + ex.toString());
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return 0;
+    }
+
     private boolean logCashTransaction(int idemp, long idacc, float amount, Connection conn) throws SQLException {
         if (!(idemp <= 0 || amount == 0 || idemp == 0)) {
             String query = "INSERT INTO CashTransactions(idemp, idacc, amount) "
@@ -563,8 +584,7 @@ public class ConnectionProvider {
             conn.setAutoCommit(false);
             if (updateAccountBalance(idacc, amount, conn) && logCashTransaction(idemp, idacc, amount, conn)) {
                 conn.commit();
-            }
-            else{
+            } else {
                 conn.rollback();
             }
         } catch (SQLException ex) {
@@ -582,22 +602,20 @@ public class ConnectionProvider {
             }
         }
     }
-    
-    public boolean addNewCard(long cardnumber, long idacc, int pincode){
+
+    public boolean addNewCard(long cardnumber, long idacc, int pincode) {
         String query = "INSERT INTO BankCards(cardnumber, idacc, pincode) "
                 + "VALUES(?,?,?)";
         Connection conn = getConnection();
-        if(conn != null){
-            try(PreparedStatement ps = conn.prepareStatement(query)){
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setLong(1, cardnumber);
                 ps.setLong(2, idacc);
                 ps.setInt(3, pincode);
                 return ps.executeUpdate() == 1;
-            }
-            catch(SQLException ex){
-                 System.out.println("addNewCard Error: " + ex.toString());
-            }
-            finally{
+            } catch (SQLException ex) {
+                System.out.println("addNewCard Error: " + ex.toString());
+            } finally {
                 try {
                     conn.close();
                 } catch (SQLException ex) {
@@ -607,8 +625,8 @@ public class ConnectionProvider {
         }
         return false;
     }
-    
-    public List<Long> getAllCardNumbers(){
+
+    public List<Long> getAllCardNumbers() {
         String query = "SELECT cardnumber FROM BankCards";
         Connection conn = getConnection();
         List<Long> cardNumbersList = new ArrayList<Long>();
@@ -630,8 +648,8 @@ public class ConnectionProvider {
         }
         return cardNumbersList;
     }
-    
-    public List<Card> getClientCards(long idacc){
+
+    public List<Card> getClientCards(long idacc) {
         String query = "SELECT * FROM BankCards WHERE idacc LIKE ?";
         Connection conn = getConnection();
         List<Card> listOfCards = new ArrayList<>();
@@ -659,5 +677,21 @@ public class ConnectionProvider {
             }
         }
         return listOfCards;
+    }
+
+    public boolean updateClientCard(Card card) {
+        String query = "UPDATE BankCards SET pincode = ?, blocked = ? WHERE idcard = ?";
+        Connection conn = getConnection();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, card.getPincode());
+                ps.setString(2, card.isBlocked() ? "T" : "F");
+                ps.setInt(3, card.getIdCard());
+                return ps.executeUpdate() == 1;
+            } catch (SQLException ex) {
+                System.out.println("updateClientCard Error: " + ex.toString());
+            }
+        }
+        return false;
     }
 }

@@ -248,7 +248,7 @@ public class MainForm extends javax.swing.JFrame {
             Client client = new ConnectionProvider().getClientById(selectedClient.getIdc());
             ClientInfoPanel clientInfoPanel = new ClientInfoPanel(client.getIdc());
             ClientAccountsPanel clientAccountsPanel = new ClientAccountsPanel(selectedClient.getIdc(), idemp);
-            TransactionPanel transactionPanel = new TransactionPanel();
+            TransactionPanel transactionPanel = new TransactionPanel(selectedClient.getIdc());
             jTabbedPane1.add("Information", clientInfoPanel);
             jTabbedPane1.add("Accounts", clientAccountsPanel);
             jTabbedPane1.add("Transaction", transactionPanel);

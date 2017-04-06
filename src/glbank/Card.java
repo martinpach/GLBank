@@ -43,6 +43,15 @@ public class Card {
     public int getPincode() {
         return pincode;
     }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public void setPincode(int pincode) {
+        this.pincode = pincode;
+    }
+    
     
     
 }
