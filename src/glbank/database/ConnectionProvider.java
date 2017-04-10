@@ -694,4 +694,74 @@ public class ConnectionProvider {
         }
         return false;
     }
+
+    public void performBankTransaction(long srcacc, long destacc, int srcbank,
+            int destbank, float amount, int idemp, String description) {
+        Connection conn = getConnection();
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(false);
+                if (amount < getAccountBalance(srcacc)) {
+                    if (destbank == 2701) {
+
+                        if (updateAccountBalance(srcacc, -1 * amount, conn)
+                                && updateAccountBalance(destacc, amount, conn)
+                                && logBankTransaction(conn, idemp, amount, srcacc,
+                                        destacc, srcbank, destbank, description)) {
+                            System.out.println("done");
+                            conn.commit();
+                        } else {
+                            System.out.println("not done");
+                            conn.rollback();
+                        }
+
+                    } else {
+                        if (updateAccountBalance(srcacc, -1 * amount, conn)
+                                && logBankTransaction(conn, idemp, amount, srcacc,
+                                        destacc, srcbank, destbank, description)) {
+                            conn.commit();
+                        } else {
+                            conn.rollback();
+                        }
+                    }
+                }
+
+            } catch (SQLException ex) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex1) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+                System.out.println("performBankTransaction Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    private boolean logBankTransaction(Connection conn, int idemp, float amount,
+            long srcacc, long destacc, int srcbank, int destbank, String description) {
+
+        String query = "INSERT INTO BankTransactions"
+                + "(idemp, amount, srcacc, destacc, srcbank, destbank, description) "
+                + "VALUES(?,?,?,?,?,?,?)";
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, idemp);
+            ps.setFloat(2, Math.abs(amount));
+            ps.setLong(3, srcacc);
+            ps.setLong(4, destacc);
+            ps.setInt(5, srcbank);
+            ps.setInt(6, destbank);
+            ps.setString(7, description);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            System.out.println("logBankTransaction Error: " + ex.toString());
+            return false;
+        }
+    }
+
 }

@@ -8,28 +8,31 @@ package gui.panels;
 import glbank.Account;
 import glbank.database.ConnectionProvider;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Martin
  */
 public class TransactionPanel extends javax.swing.JPanel {
-    
+
     private int idc;
+    private int idemp;
 
     /**
      * Creates new form TransactionPanel
      */
-    public TransactionPanel(int idc) {
+    public TransactionPanel(int idc, int idemp) {
         initComponents();
         this.idc = idc;
+        this.idemp = idemp;
         initForm();
     }
-    
+
     private void initForm() {
         showListOfSourceAccount();
     }
-    
+
     private void showListOfSourceAccount() {
         comboSourceAccount.removeAllItems();
         List<Account> clientAccounts = new ConnectionProvider().getClientAccounts(idc);
@@ -38,6 +41,66 @@ public class TransactionPanel extends javax.swing.JPanel {
                 comboSourceAccount.addItem("" + account.getIdacc());
             }
         }
+    }
+
+    private float getInputAmount() {
+        float value;
+        try {
+            value = Float.parseFloat(txtSourceAmount.getText());
+        } catch (NumberFormatException ex) {
+            value = 0;
+        }
+        return value = (float) Math.round(value * 100) / 100;
+    }
+
+    private boolean checkGLDestinationAccount() {
+        List<Long> allAccountNumbers = new ConnectionProvider().getAllAccountNumbers();
+        long destinationAcc;
+        try {
+            destinationAcc = Long.parseLong(txtDestinationAcc.getText());
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        for (long accNum : allAccountNumbers) {
+            if (destinationAcc == accNum) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkDestinationAccountFormat() {
+        String destinationAcc = txtDestinationAcc.getText();
+        if (destinationAcc.length() >= 8 && destinationAcc.length() <= 10) {
+            try {
+                long temp = Long.parseLong(destinationAcc);
+            } catch (NumberFormatException ex) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private int getDestBank() {
+        String selectedBank = (String) comboBankCode.getSelectedItem();
+        switch (selectedBank) {
+            case "GLbank":
+                return 2701;
+            case "TatraBanka":
+                return 1100;
+            case "mBank":
+                return 8360;
+            default:
+                return 2701;
+        }
+    }
+
+    private boolean isEveryFieldFilled() {
+        if (!"".equals(txtDestinationAcc.getText().trim()) && !"".equals(txtSourceAmount.getText().trim())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -54,11 +117,12 @@ public class TransactionPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         btnSubmitTransaction = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
         txtSourceAmount = new javax.swing.JTextField();
         txtDestinationAcc = new javax.swing.JTextField();
         comboBankCode = new javax.swing.JComboBox<>();
         comboSourceAccount = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
+        txtDescription = new javax.swing.JTextField();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Amount :");
@@ -81,33 +145,37 @@ public class TransactionPanel extends javax.swing.JPanel {
 
         comboBankCode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "GLbank", "TatraBanka", "mBank" }));
 
+        jLabel5.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel5.setText("Description :");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(52, 52, 52)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(90, 90, 90)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel2)
                             .addComponent(jLabel3)
+                            .addComponent(jLabel5))
+                        .addGap(40, 40, 40)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(comboBankCode, javax.swing.GroupLayout.Alignment.LEADING, 0, 290, Short.MAX_VALUE)
+                            .addComponent(txtDestinationAcc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+                            .addComponent(txtDescription, javax.swing.GroupLayout.Alignment.LEADING)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtSourceAmount)
-                            .addComponent(comboSourceAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 818, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(374, 374, 374)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(comboBankCode, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDestinationAcc, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSubmitTransaction, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(154, 154, 154)))
-                .addContainerGap(54, Short.MAX_VALUE))
+                            .addComponent(comboSourceAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
+                .addComponent(btnSubmitTransaction, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,9 +188,7 @@ public class TransactionPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtSourceAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtDestinationAcc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -131,19 +197,49 @@ public class TransactionPanel extends javax.swing.JPanel {
                     .addComponent(jLabel4)
                     .addComponent(comboBankCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnSubmitTransaction, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(btnSubmitTransaction, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSubmitTransactionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitTransactionActionPerformed
-        float value;
-        try {
-                value = Float.parseFloat(txtSourceAmount.getText());
-            } catch (Exception ex) {
-                value = 0;
+        if (isEveryFieldFilled()) {
+            long srcacc;
+            long destacc;
+            float amount;
+            try {
+                srcacc = Long.parseLong((String) comboSourceAccount.getSelectedItem());
+                destacc = Long.parseLong(txtDestinationAcc.getText());
+                amount = Math.abs(Float.parseFloat(txtSourceAmount.getText()));
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Check your fields!");
+                return;
             }
-            value = (float) Math.round(value * 100) / 100;
+            int srcbank = 2701;
+            int destbank = getDestBank();
+            String description = txtDescription.getText();
+
+            if (comboBankCode.getSelectedIndex() == 0) {
+                if (checkGLDestinationAccount() && checkDestinationAccountFormat()) {
+                    System.out.println("btn submit performed");
+                    new ConnectionProvider().performBankTransaction(srcacc, destacc,
+                            srcbank, destbank, amount, idemp, description);
+                    JOptionPane.showMessageDialog(this, "Transaction performed!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Bad format of destination account");
+                }
+            } else {
+                if (checkDestinationAccountFormat()) {
+                    new ConnectionProvider().performBankTransaction(srcacc, destacc,
+                            srcbank, destbank, amount, idemp, description);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Bad format of destination account");
+                }
+            }
+        }
     }//GEN-LAST:event_btnSubmitTransactionActionPerformed
 
 
@@ -155,7 +251,8 @@ public class TransactionPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JTextField txtDescription;
     private javax.swing.JTextField txtDestinationAcc;
     private javax.swing.JTextField txtSourceAmount;
     // End of variables declaration//GEN-END:variables
