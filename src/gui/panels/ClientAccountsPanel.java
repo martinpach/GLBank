@@ -9,6 +9,7 @@ import glbank.Account;
 import glbank.Card;
 import glbank.database.ConnectionProvider;
 import gui.EditCardDialog;
+import gui.ListOfTransactionsDialog;
 import gui.NewAccountDialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -87,10 +88,13 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
     private long generateRandomAccountNumber() {
         boolean isUnique = false;
         long randomAccNum;
-
+        List<Long> allAccounts = new ConnectionProvider().getAllAccountNumbers();
         do {
             randomAccNum = ThreadLocalRandom.current().nextLong(100000000, 900000000) * 11;
-            for (long accountNumber : new ConnectionProvider().getAllAccountNumbers()) {
+            if(allAccounts.isEmpty()){
+                return randomAccNum;
+            }
+            for (long accountNumber : allAccounts) {
                 if (randomAccNum == accountNumber) {
                     isUnique = false;
                     break;
@@ -164,6 +168,7 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         btnEditCard = new javax.swing.JButton();
         btnAddCard = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        btnShowAllTransactions = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel1.setText("Account id :");
@@ -227,6 +232,13 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
             }
         });
 
+        btnShowAllTransactions.setText("Show all transactions");
+        btnShowAllTransactions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShowAllTransactionsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -259,16 +271,22 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(140, 140, 140)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(15, 15, 15)
-                                .addComponent(jLabel4))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(15, 15, 15)
+                                        .addComponent(jLabel4))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnSubMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(38, 38, 38)
+                                        .addComponent(btnAddMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnShowAllTransactions)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnAddNewAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnSubMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(38, 38, 38)
-                                .addComponent(btnAddMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnAddNewAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtAdditionalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addGap(35, 35, 35))
         );
         layout.setVerticalGroup(
@@ -296,7 +314,8 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSubMoney)
                     .addComponent(btnAddMoney)
-                    .addComponent(btnAddNewAccount))
+                    .addComponent(btnAddNewAccount)
+                    .addComponent(btnShowAllTransactions))
                 .addGap(35, 35, 35))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -366,12 +385,20 @@ public class ClientAccountsPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_comboBoxCardsActionPerformed
 
+    private void btnShowAllTransactionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowAllTransactionsActionPerformed
+        ListOfTransactionsDialog transactionList = new ListOfTransactionsDialog((JFrame) 
+                this.getRootPane().getParent(), true, accountsList.get(selectedAccountIndex).getIdacc());
+        transactionList.setLocationRelativeTo(null);
+        transactionList.setVisible(true);
+    }//GEN-LAST:event_btnShowAllTransactionsActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCard;
     private javax.swing.JButton btnAddMoney;
     private javax.swing.JButton btnAddNewAccount;
     private javax.swing.JButton btnEditCard;
+    private javax.swing.JButton btnShowAllTransactions;
     private javax.swing.JButton btnSubMoney;
     private javax.swing.JComboBox<String> comboBoxAccountId;
     private javax.swing.JComboBox<String> comboBoxCards;

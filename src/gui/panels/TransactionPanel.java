@@ -218,10 +218,14 @@ public class TransactionPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Check your fields!");
                 return;
             }
+            if (amount > new ConnectionProvider().getAccountBalance(srcacc)) {
+                JOptionPane.showMessageDialog(this, "Not enough money on source account!");
+                return;
+            }
+
             int srcbank = 2701;
             int destbank = getDestBank();
             String description = txtDescription.getText();
-
             if (comboBankCode.getSelectedIndex() == 0) {
                 if (checkGLDestinationAccount() && checkDestinationAccountFormat()) {
                     System.out.println("btn submit performed");
@@ -235,6 +239,7 @@ public class TransactionPanel extends javax.swing.JPanel {
                 if (checkDestinationAccountFormat()) {
                     new ConnectionProvider().performBankTransaction(srcacc, destacc,
                             srcbank, destbank, amount, idemp, description);
+                    JOptionPane.showMessageDialog(this, "Transaction performed!");
                 } else {
                     JOptionPane.showMessageDialog(this, "Bad format of destination account");
                 }

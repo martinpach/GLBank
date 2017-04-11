@@ -6,6 +6,7 @@
 package glbank.database;
 
 import glbank.Account;
+import glbank.BankTransaction;
 import glbank.Card;
 import glbank.Client;
 import glbank.Employee;
@@ -701,28 +702,26 @@ public class ConnectionProvider {
         if (conn != null) {
             try {
                 conn.setAutoCommit(false);
-                if (amount < getAccountBalance(srcacc)) {
-                    if (destbank == 2701) {
+                if (destbank == 2701) {
 
-                        if (updateAccountBalance(srcacc, -1 * amount, conn)
-                                && updateAccountBalance(destacc, amount, conn)
-                                && logBankTransaction(conn, idemp, amount, srcacc,
-                                        destacc, srcbank, destbank, description)) {
-                            System.out.println("done");
-                            conn.commit();
-                        } else {
-                            System.out.println("not done");
-                            conn.rollback();
-                        }
-
+                    if (updateAccountBalance(srcacc, -1 * amount, conn)
+                            && updateAccountBalance(destacc, amount, conn)
+                            && logBankTransaction(conn, idemp, amount, srcacc,
+                                    destacc, srcbank, destbank, description)) {
+                        System.out.println("done");
+                        conn.commit();
                     } else {
-                        if (updateAccountBalance(srcacc, -1 * amount, conn)
-                                && logBankTransaction(conn, idemp, amount, srcacc,
-                                        destacc, srcbank, destbank, description)) {
-                            conn.commit();
-                        } else {
-                            conn.rollback();
-                        }
+                        System.out.println("not done");
+                        conn.rollback();
+                    }
+
+                } else {
+                    if (updateAccountBalance(srcacc, -1 * amount, conn)
+                            && logBankTransaction(conn, idemp, amount, srcacc,
+                                    destacc, srcbank, destbank, description)) {
+                        conn.commit();
+                    } else {
+                        conn.rollback();
                     }
                 }
 
@@ -763,5 +762,37 @@ public class ConnectionProvider {
             return false;
         }
     }
+
+    public List<BankTransaction> getBankTransactions(long idacc) {
+        String query = "SELECT amount, transdatetime, idemp, destacc FROM "
+                + "BankTransactions WHERE srcacc = ?";
+        List<BankTransaction> transactions = new ArrayList<>();
+        Connection conn = getConnection();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setLong(1, idacc);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    BankTransaction transaction = new BankTransaction(
+                            rs.getFloat("amount"),
+                            rs.getDate("transdatetime"),
+                            rs.getInt("idemp"),
+                            rs.getLong("destacc")
+                    );
+                    transactions.add(transaction);
+                }
+            } catch (SQLException ex) {
+                System.out.println("getBankTransactions Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return transactions;
+    }
+    
 
 }
