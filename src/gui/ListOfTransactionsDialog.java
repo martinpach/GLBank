@@ -6,6 +6,7 @@
 package gui;
 
 import glbank.BankTransaction;
+import glbank.CashTransaction;
 import glbank.database.ConnectionProvider;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -35,6 +36,17 @@ public class ListOfTransactionsDialog extends javax.swing.JDialog {
                 bankTransaction.getAmount(),
                 bankTransaction.getIdemp(),
                 bankTransaction.getDestacc()});
+        }
+    }
+    
+    private void showListOfCashTransactions(DefaultTableModel model){
+        List<CashTransaction> cashTransactions = new ConnectionProvider().getCashTransactions(idacc);
+        for (CashTransaction cashTransaction : cashTransactions) {
+            model.addRow(new Object[]{
+                cashTransaction.getCashDatetime(),
+                cashTransaction.getAmount(),
+                cashTransaction.getIdemp(),
+                cashTransaction.getIdacc()});
         }
     }
 
@@ -116,6 +128,9 @@ public class ListOfTransactionsDialog extends javax.swing.JDialog {
         }
         if (comboTypeOfTransactions.getSelectedIndex() == 1) {
             showListOfBankTransactions(model);
+        }
+        if(comboTypeOfTransactions.getSelectedIndex() == 2){
+            showListOfCashTransactions(model);
         }
     }//GEN-LAST:event_comboTypeOfTransactionsActionPerformed
 

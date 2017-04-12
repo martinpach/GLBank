@@ -8,6 +8,7 @@ package glbank.database;
 import glbank.Account;
 import glbank.BankTransaction;
 import glbank.Card;
+import glbank.CashTransaction;
 import glbank.Client;
 import glbank.Employee;
 import java.sql.Connection;
@@ -793,6 +794,36 @@ public class ConnectionProvider {
         }
         return transactions;
     }
-    
+
+    public List<CashTransaction> getCashTransactions(long idacc) {
+        String query = "SELECT amount, cashdatetime, idemp, idacc FROM "
+                + "CashTransactions WHERE idacc = ?";
+        List<CashTransaction> transactions = new ArrayList<>();
+        Connection conn = getConnection();
+        if (conn != null) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setLong(1, idacc);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    CashTransaction transaction = new CashTransaction(
+                            rs.getInt("idemp"),
+                            rs.getFloat("amount"),
+                            idacc,
+                            rs.getDate("cashdatetime")
+                    );
+                    transactions.add(transaction);
+                }
+            } catch (SQLException ex) {
+                System.out.println("getCashTransactions Error: " + ex.toString());
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConnectionProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return transactions;
+    }
 
 }
