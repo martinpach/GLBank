@@ -91,6 +91,7 @@
             this.btnLeft3.Size = new System.Drawing.Size(63, 55);
             this.btnLeft3.TabIndex = 2;
             this.btnLeft3.UseVisualStyleBackColor = false;
+            this.btnLeft3.Click += new System.EventHandler(this.btnLeft3_Click);
             // 
             // btnLeft4
             // 

@@ -13,7 +13,7 @@ namespace GLBankATM
 {
     public enum States
     {
-        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD
+        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD, BALANCE
     }
 
     public enum Language
@@ -26,18 +26,14 @@ namespace GLBankATM
         private long id;       
         private Language language;
         private States state;
-        private string pinCode = "";
-        //private Bitmap bitmap;
-        //private Graphics g;     
+        private string pinCode = "";    
 
         public MainScreen(long id)
         {
             InitializeComponent();
+            this.CenterToScreen();
             changeState(States.LANGUAGE);                        
             this.id = id;
-            /*bitmap = new Bitmap(371, 304);
-            g = Graphics.FromImage(bitmap);
-            g.Clear(Color.White);*/
         }
 
         private void changeState(States state)
@@ -51,10 +47,16 @@ namespace GLBankATM
             lblLeft4.Text = "";
             lblRight1.Text = "";
             lblRight2.Text = "";
-            lblRight3.Text = "";
-            lblRight4.Text = "";
+            lblRight3.Text = "";           
+            lblRight4.Text = "Exit";
             lblCenter.Text = "";
             lblCenterBottom.Text = "";
+            btnRight4.Enabled = true;
+            if(state == States.BALANCE)
+            {
+                btnLeft4.Enabled = true;
+                lblLeft4.Text = "Back";
+            }
 
             switch (state)
             {
@@ -86,15 +88,35 @@ namespace GLBankATM
                     break;
 
                 case States.PINOK:
-                    lblCenter.Text = "PIN OK";
-                    lblCenter.center();
+                    btnLeft3.Enabled = true;
+                    if (language == Language.ENG)
+                    {
+                        lblLeft3.Text = "Balance";
+                    }
+                    else
+                    {
+                        lblLeft3.Text = "Zostatok";
+                    }
                     break;
 
                 case States.PINWRONG:
                     enableKeyboard();
-                    lblCenter.Text = "PIN WRONG";
+                    if(language == Language.ENG)
+                        lblCenter.Text = "PIN WRONG";
+                    else
+                        lblCenter.Text = "NESPRAVNY PIN";
                     lblCenter.center();
-                    break;  
+                    break;
+
+                case States.BALANCE:
+                    if (language == Language.ENG)
+                        lblCenter.Text = "Balance";
+                    else
+                        lblCenter.Text = "Zostatok na ucte";
+                    lblCenter.center();
+                    lblCenterBottom.Text = "" + Database.getBalance(id) + "€";
+                    lblCenterBottom.center();
+                    break;
             }
         }
 
@@ -110,6 +132,8 @@ namespace GLBankATM
                     changeState(States.ENTERPIN);
                 }                
             }
+            else
+                changeState(States.PINOK);
         }
 
         private void btnRight4_Click(object sender, EventArgs e)
@@ -123,6 +147,10 @@ namespace GLBankATM
                 {
                     changeState(States.ENTERPIN);
                 }                
+            }
+            else
+            {
+                this.Close();
             }
         }
 
@@ -274,10 +302,12 @@ namespace GLBankATM
             }
         }
 
-        /*private void writeLeft4(string text)
+        private void btnLeft3_Click(object sender, EventArgs e)
         {
-            g.DrawString(text, new Font("Tahoma", 24), Brushes.Blue, new Point(50, 50));
-            pictureBox1.Image = bitmap;
-        }    */
+            if (this.state.Equals(States.PINOK))
+            {
+                changeState(States.BALANCE);
+            }
+        }
     }
 }

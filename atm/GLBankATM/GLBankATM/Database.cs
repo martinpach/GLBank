@@ -210,5 +210,64 @@ namespace GLBankATM
             markPinAttempt(cardnumber, false);
             return 0;
         }
+
+        public static double getBalance(long cardnumber)
+        {
+            long accountNumber = getAccountNumber(cardnumber);
+            string query = "SELECT balance FROM accounts WHERE idacc = " + accountNumber;
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return Math.Round(reader.GetDouble("balance"), 2);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    reader.Close();
+                    connection.Close();
+                }
+            }
+            return 0;
+        }
+
+        private static long getAccountNumber(long cardnumber)
+        {
+            string query = "SELECT idacc FROM bankcards WHERE cardnumber = " + cardnumber;
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return reader.GetInt64("idacc");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    reader.Close();
+                    connection.Close();
+                }
+            }
+            return 0;
+        }
     }
 }

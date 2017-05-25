@@ -15,6 +15,7 @@ namespace GLBankATM
         public CardNumberForm()
         {
             InitializeComponent();
+            this.CenterToScreen();
         }
 
         private void btnSubmit_Click(object sender, EventArgs e)
@@ -32,6 +33,11 @@ namespace GLBankATM
             {
                 lblInvalidCard.Visible = true;
             }   
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            txtCardNumber.Text = "";
         }
     }
 }
