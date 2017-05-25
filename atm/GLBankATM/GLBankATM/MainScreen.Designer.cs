@@ -51,14 +51,14 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblCenter = new System.Windows.Forms.Label();
             this.lblRight4 = new System.Windows.Forms.Label();
-            this.lblRight3 = new System.Windows.Forms.Label();
-            this.lblRight2 = new System.Windows.Forms.Label();
-            this.lblRight1 = new System.Windows.Forms.Label();
             this.lblLeft4 = new System.Windows.Forms.Label();
             this.lblLeft3 = new System.Windows.Forms.Label();
             this.lblLeft2 = new System.Windows.Forms.Label();
             this.lblLeft1 = new System.Windows.Forms.Label();
             this.lblCenterBottom = new System.Windows.Forms.Label();
+            this.lblRight1 = new System.Windows.Forms.Label();
+            this.lblRight2 = new System.Windows.Forms.Label();
+            this.lblRight3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -133,6 +133,7 @@
             this.btnRight3.Size = new System.Drawing.Size(63, 55);
             this.btnRight3.TabIndex = 6;
             this.btnRight3.UseVisualStyleBackColor = false;
+            this.btnRight3.Click += new System.EventHandler(this.btnRight3_Click);
             // 
             // btnRight4
             // 
@@ -246,13 +247,14 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.BackColor = System.Drawing.Color.OrangeRed;
             this.btnCancel.Enabled = false;
             this.btnCancel.Location = new System.Drawing.Point(285, 518);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(52, 42);
             this.btnCancel.TabIndex = 17;
             this.btnCancel.Text = "C";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // btn0
@@ -268,23 +270,24 @@
             // 
             // btnOk
             // 
+            this.btnOk.BackColor = System.Drawing.Color.DarkOliveGreen;
             this.btnOk.Enabled = false;
             this.btnOk.Location = new System.Drawing.Point(395, 518);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(52, 42);
             this.btnOk.TabIndex = 19;
             this.btnOk.Text = "OK";
-            this.btnOk.UseVisualStyleBackColor = true;
+            this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.lblCenterBottom);
-            this.groupBox1.Controls.Add(this.lblCenter);
-            this.groupBox1.Controls.Add(this.lblRight4);
             this.groupBox1.Controls.Add(this.lblRight3);
             this.groupBox1.Controls.Add(this.lblRight2);
             this.groupBox1.Controls.Add(this.lblRight1);
+            this.groupBox1.Controls.Add(this.lblCenterBottom);
+            this.groupBox1.Controls.Add(this.lblCenter);
+            this.groupBox1.Controls.Add(this.lblRight4);
             this.groupBox1.Controls.Add(this.lblLeft4);
             this.groupBox1.Controls.Add(this.lblLeft3);
             this.groupBox1.Controls.Add(this.lblLeft2);
@@ -312,33 +315,6 @@
             this.lblRight4.Name = "lblRight4";
             this.lblRight4.Size = new System.Drawing.Size(0, 25);
             this.lblRight4.TabIndex = 7;
-            // 
-            // lblRight3
-            // 
-            this.lblRight3.AutoSize = true;
-            this.lblRight3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight3.Location = new System.Drawing.Point(1445, 422);
-            this.lblRight3.Name = "lblRight3";
-            this.lblRight3.Size = new System.Drawing.Size(0, 25);
-            this.lblRight3.TabIndex = 6;
-            // 
-            // lblRight2
-            // 
-            this.lblRight2.AutoSize = true;
-            this.lblRight2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight2.Location = new System.Drawing.Point(1445, 337);
-            this.lblRight2.Name = "lblRight2";
-            this.lblRight2.Size = new System.Drawing.Size(0, 25);
-            this.lblRight2.TabIndex = 5;
-            // 
-            // lblRight1
-            // 
-            this.lblRight1.AutoSize = true;
-            this.lblRight1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight1.Location = new System.Drawing.Point(1445, 254);
-            this.lblRight1.Name = "lblRight1";
-            this.lblRight1.Size = new System.Drawing.Size(0, 25);
-            this.lblRight1.TabIndex = 4;
             // 
             // lblLeft4
             // 
@@ -385,11 +361,38 @@
             this.lblCenterBottom.Size = new System.Drawing.Size(0, 37);
             this.lblCenterBottom.TabIndex = 9;
             // 
+            // lblRight1
+            // 
+            this.lblRight1.AutoSize = true;
+            this.lblRight1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight1.Location = new System.Drawing.Point(278, 16);
+            this.lblRight1.Name = "lblRight1";
+            this.lblRight1.Size = new System.Drawing.Size(0, 25);
+            this.lblRight1.TabIndex = 10;
+            // 
+            // lblRight2
+            // 
+            this.lblRight2.AutoSize = true;
+            this.lblRight2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight2.Location = new System.Drawing.Point(290, 100);
+            this.lblRight2.Name = "lblRight2";
+            this.lblRight2.Size = new System.Drawing.Size(0, 25);
+            this.lblRight2.TabIndex = 11;
+            // 
+            // lblRight3
+            // 
+            this.lblRight3.AutoSize = true;
+            this.lblRight3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight3.Location = new System.Drawing.Point(254, 185);
+            this.lblRight3.Name = "lblRight3";
+            this.lblRight3.Size = new System.Drawing.Size(0, 25);
+            this.lblRight3.TabIndex = 12;
+            // 
             // MainScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(725, 592);
+            this.ClientSize = new System.Drawing.Size(752, 584);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btn0);
@@ -443,14 +446,14 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label lblRight4;
-        private System.Windows.Forms.Label lblRight3;
-        private System.Windows.Forms.Label lblRight2;
-        private System.Windows.Forms.Label lblRight1;
         private System.Windows.Forms.Label lblLeft4;
         private System.Windows.Forms.Label lblLeft3;
         private System.Windows.Forms.Label lblLeft2;
         private System.Windows.Forms.Label lblLeft1;
         private System.Windows.Forms.Label lblCenter;
         private System.Windows.Forms.Label lblCenterBottom;
+        private System.Windows.Forms.Label lblRight3;
+        private System.Windows.Forms.Label lblRight2;
+        private System.Windows.Forms.Label lblRight1;
     }
 }

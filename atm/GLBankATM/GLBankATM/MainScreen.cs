@@ -13,7 +13,7 @@ namespace GLBankATM
 {
     public enum States
     {
-        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD, BALANCE
+        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD, BALANCE, CHANGEPIN
     }
 
     public enum Language
@@ -48,22 +48,24 @@ namespace GLBankATM
             lblRight1.Text = "";
             lblRight2.Text = "";
             lblRight3.Text = "";           
-            lblRight4.Text = "Exit";
+            lblRight4.Text = "Exit ->";
             lblCenter.Text = "";
             lblCenterBottom.Text = "";
             btnRight4.Enabled = true;
-            if(state == States.BALANCE)
+            if(state == States.BALANCE || state == States.CHANGEPIN)
             {
                 btnLeft4.Enabled = true;
-                lblLeft4.Text = "Back";
+                if (this.language == Language.ENG)
+                    lblLeft4.Text = "Back";
+                else
+                    lblLeft4.Text = "Spat";
             }
 
             switch (state)
             {
                 case States.LANGUAGE:
                     btnLeft4.Enabled = true;
-                    btnRight4.Enabled = true;
-                    //writeLeft4("Slovak");
+                    btnRight4.Enabled = true;                    
                     lblLeft4.Text = "English";
                     lblRight4.Text = "Slovak";
                     lblCenter.Text = "Choose language";
@@ -89,13 +91,16 @@ namespace GLBankATM
 
                 case States.PINOK:
                     btnLeft3.Enabled = true;
+                    btnRight3.Enabled = true;
                     if (language == Language.ENG)
                     {
                         lblLeft3.Text = "Balance";
+                        lblRight3.Text = "Change PIN";
                     }
                     else
                     {
                         lblLeft3.Text = "Zostatok";
+                        lblRight3.Text = "Zmena PIN";
                     }
                     break;
 
@@ -116,6 +121,19 @@ namespace GLBankATM
                     lblCenter.center();
                     lblCenterBottom.Text = "" + Database.getBalance(id) + "€";
                     lblCenterBottom.center();
+                    break;
+
+                case States.CHANGEPIN:
+                    enableKeyboard();
+                    if(language == Language.ENG)
+                    {
+                        lblCenter.Text = "Enter new PIN:";                        
+                    }
+                    else
+                    {
+                        lblCenter.Text = "Zadaj novy PIN: ";                        
+                    }                    
+                    lblCenter.center();                    
                     break;
             }
         }
@@ -172,7 +190,7 @@ namespace GLBankATM
 
         private void btn1_Click(object sender, EventArgs e)
         {
-            if((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -182,7 +200,7 @@ namespace GLBankATM
 
         private void btn2_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -192,7 +210,7 @@ namespace GLBankATM
 
         private void btn3_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -202,7 +220,7 @@ namespace GLBankATM
 
         private void btn4_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -212,7 +230,7 @@ namespace GLBankATM
 
         private void btn5_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -222,7 +240,7 @@ namespace GLBankATM
 
         private void btn6_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -232,7 +250,7 @@ namespace GLBankATM
 
         private void btn7_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -242,7 +260,7 @@ namespace GLBankATM
 
         private void btn8_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -252,7 +270,7 @@ namespace GLBankATM
 
         private void btn9_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -262,7 +280,7 @@ namespace GLBankATM
 
         private void btn0_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
@@ -272,7 +290,7 @@ namespace GLBankATM
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            if (States.ENTERPIN == state || States.PINWRONG == state)
+            if (States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state)
             {
                 lblCenterBottom.Text = "";
                 pinCode = "";
@@ -285,7 +303,10 @@ namespace GLBankATM
             {              
                 int pin = int.Parse(pinCode);
                 if (Database.isPinCorrect(pin, id))
+                {
                     changeState(States.PINOK);
+                    pinCode = "";
+                }
                 else
                 {
                     if (Database.getIncorrectPinAttempts(id) > 2)
@@ -307,6 +328,14 @@ namespace GLBankATM
             if (this.state.Equals(States.PINOK))
             {
                 changeState(States.BALANCE);
+            }
+        }
+
+        private void btnRight3_Click(object sender, EventArgs e)
+        {
+            if (this.state.Equals(States.PINOK))
+            {
+                changeState(States.CHANGEPIN);
             }
         }
     }
