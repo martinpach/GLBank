@@ -13,7 +13,7 @@ namespace GLBankATM
 {
     public enum States
     {
-        LANGUAGE, ENTERPIN, PINOK, PINWRONG, INVALIDCARD
+        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD
     }
 
     public enum Language
@@ -26,6 +26,7 @@ namespace GLBankATM
         private long id;       
         private Language language;
         private States state;
+        private string pinCode = "";
         //private Bitmap bitmap;
         //private Graphics g;     
 
@@ -53,6 +54,7 @@ namespace GLBankATM
             lblRight3.Text = "";
             lblRight4.Text = "";
             lblCenter.Text = "";
+            lblCenterBottom.Text = "";
 
             switch (state)
             {
@@ -63,26 +65,36 @@ namespace GLBankATM
                     lblLeft4.Text = "English";
                     lblRight4.Text = "Slovak";
                     lblCenter.Text = "Choose language";
+                    lblCenter.center();
+                    break;
+
+                case States.BLOCKEDCARD:
+                    if (language == Language.ENG)
+                        lblCenterBottom.Text = "CARD BLOCKED";                
+                    else
+                        lblCenterBottom.Text = "KARTA ZABLOKOVANA";
+                    lblCenterBottom.center();
                     break;
 
                 case States.ENTERPIN:
-                    btn0.Enabled = true;
-                    btn1.Enabled = true;
-                    btn2.Enabled = true;
-                    btn3.Enabled = true;
-                    btn4.Enabled = true;
-                    btn5.Enabled = true;
-                    btn6.Enabled = true;
-                    btn7.Enabled = true;
-                    btn8.Enabled = true;
-                    btn9.Enabled = true;
-                    btnOk.Enabled = true;
-                    btnCancel.Enabled = true;
+                    enableKeyboard();
                     if (language == Language.ENG)
                         lblCenter.Text = "Enter PIN";
                     else
                         lblCenter.Text = "Zadajte PIN";
-                    break;               
+                    lblCenter.center();
+                    break;
+
+                case States.PINOK:
+                    lblCenter.Text = "PIN OK";
+                    lblCenter.center();
+                    break;
+
+                case States.PINWRONG:
+                    enableKeyboard();
+                    lblCenter.Text = "PIN WRONG";
+                    lblCenter.center();
+                    break;  
             }
         }
 
@@ -91,7 +103,12 @@ namespace GLBankATM
             if (this.state.Equals(States.LANGUAGE))
             {
                 language = Language.ENG;
-                changeState(States.ENTERPIN);
+                if (Database.isCardBlocked(id))
+                    changeState(States.BLOCKEDCARD);
+                else
+                {
+                    changeState(States.ENTERPIN);
+                }                
             }
         }
 
@@ -100,7 +117,160 @@ namespace GLBankATM
             if (this.state.Equals(States.LANGUAGE))
             {
                 language = Language.SVK;
-                changeState(States.ENTERPIN);
+                if (Database.isCardBlocked(id))
+                    changeState(States.BLOCKEDCARD);
+                else
+                {
+                    changeState(States.ENTERPIN);
+                }                
+            }
+        }
+
+        private void enableKeyboard()
+        {
+            btn0.Enabled = true;
+            btn1.Enabled = true;
+            btn2.Enabled = true;
+            btn3.Enabled = true;
+            btn4.Enabled = true;
+            btn5.Enabled = true;
+            btn6.Enabled = true;
+            btn7.Enabled = true;
+            btn8.Enabled = true;
+            btn9.Enabled = true;
+            btnOk.Enabled = true;
+            btnCancel.Enabled = true;
+        }
+
+        private void btn1_Click(object sender, EventArgs e)
+        {
+            if((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '1';
+            }
+        }
+
+        private void btn2_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '2';
+            }
+        }
+
+        private void btn3_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '3';
+            }
+        }
+
+        private void btn4_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '4';
+            }
+        }
+
+        private void btn5_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '5';
+            }
+        }
+
+        private void btn6_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '6';
+            }
+        }
+
+        private void btn7_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '7';
+            }
+        }
+
+        private void btn8_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '8';
+            }
+        }
+
+        private void btn9_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '9';
+            }
+        }
+
+        private void btn0_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length < 4)
+            {
+                lblCenterBottom.Text += "*";
+                lblCenterBottom.center();
+                pinCode += '0';
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            if (States.ENTERPIN == state || States.PINWRONG == state)
+            {
+                lblCenterBottom.Text = "";
+                pinCode = "";
+            }
+        }
+
+        private void btnOk_Click(object sender, EventArgs e)
+        {
+            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length == 4)
+            {              
+                int pin = int.Parse(pinCode);
+                if (Database.isPinCorrect(pin, id))
+                    changeState(States.PINOK);
+                else
+                {
+                    if (Database.getIncorrectPinAttempts(id) > 2)
+                    {
+                        Database.blockCard(id);
+                        changeState(States.BLOCKEDCARD);
+                    }
+                    else
+                    {
+                        pinCode = "";
+                        changeState(States.PINWRONG);
+                    }
+                }
             }
         }
 

@@ -29,15 +29,17 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.txtCardNumber = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSubmit = new System.Windows.Forms.Button();
+            this.lblInvalidCard = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblInvalidCard);
             this.groupBox1.Controls.Add(this.txtCardNumber);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(34, 36);
@@ -47,6 +49,13 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ATM";
             // 
+            // txtCardNumber
+            // 
+            this.txtCardNumber.Location = new System.Drawing.Point(149, 39);
+            this.txtCardNumber.Name = "txtCardNumber";
+            this.txtCardNumber.Size = new System.Drawing.Size(183, 20);
+            this.txtCardNumber.TabIndex = 1;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -55,13 +64,6 @@
             this.label1.Size = new System.Drawing.Size(100, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Enter card number :";
-            // 
-            // txtCardNumber
-            // 
-            this.txtCardNumber.Location = new System.Drawing.Point(149, 39);
-            this.txtCardNumber.Name = "txtCardNumber";
-            this.txtCardNumber.Size = new System.Drawing.Size(183, 20);
-            this.txtCardNumber.TabIndex = 1;
             // 
             // btnCancel
             // 
@@ -81,6 +83,18 @@
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = true;
             this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
+            // 
+            // lblInvalidCard
+            // 
+            this.lblInvalidCard.AutoSize = true;
+            this.lblInvalidCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblInvalidCard.ForeColor = System.Drawing.Color.Red;
+            this.lblInvalidCard.Location = new System.Drawing.Point(245, 62);
+            this.lblInvalidCard.Name = "lblInvalidCard";
+            this.lblInvalidCard.Size = new System.Drawing.Size(87, 18);
+            this.lblInvalidCard.TabIndex = 3;
+            this.lblInvalidCard.Text = "Invalid Card!";
+            this.lblInvalidCard.Visible = false;
             // 
             // CardNumberForm
             // 
@@ -105,6 +119,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSubmit;
+        private System.Windows.Forms.Label lblInvalidCard;
     }
 }
 

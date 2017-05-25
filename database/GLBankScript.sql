@@ -79,6 +79,7 @@ create table BankCards (idcard INTEGER AUTO_INCREMENT,
 						idacc BIGINT NOT NULL,
 						blocked CHAR(1) DEFAULT 'F',
 						pincode INTEGER NOT NULL DEFAULT 0,
+						incorrect_pincode_attempts INTEGER DEFAULT 0,
 						PRIMARY KEY (idcard),
 						FOREIGN KEY (idacc) REFERENCES Accounts(idacc) ON DELETE CASCADE ON UPDATE RESTRICT);	
 
@@ -88,4 +89,4 @@ create table Atmwithdrawals (idatmw INTEGER AUTO_INCREMENT,
 							 idAtm INTEGER,
 							 idcard INTEGER,
 							 PRIMARY KEY (idatmw),
-							 FOREIGN KEY (idcard) REFERENCES BankCards(idcard) ON DELETE CASCADE ON UPDATE RESTRICT);								
+							 FOREIGN KEY (idcard) REFERENCES BankCards(idcard) ON DELETE CASCADE ON UPDATE RESTRICT);							 

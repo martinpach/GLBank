@@ -27,6 +27,10 @@ namespace GLBankATM
                 MainScreen mainScreen = new MainScreen(id);
                 mainScreen.ShowDialog();
                 this.Show();
+            }
+            else
+            {
+                lblInvalidCard.Visible = true;
             }   
         }
     }
