@@ -269,5 +269,137 @@ namespace GLBankATM
             }
             return 0;
         }
+
+        public static void updatePin(int newPin, long cardnumber)
+        {
+            string query = "UPDATE bankcards SET pincode = "+ newPin +" WHERE cardnumber = " + cardnumber;
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        public static void subtractMoneyFromAccount(double amount, long cardnumber)
+        {
+            long accountNumber = getAccountNumber(cardnumber);
+            string query = "UPDATE accounts SET balance = balance - " + amount + " WHERE idacc = " + accountNumber;
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            markATMWithdrawal(amount, cardnumber);
+        }
+
+        private static void markATMWithdrawal(double amount, long cardnumber)
+        {
+            long accountNumber = getAccountNumber(cardnumber);
+            int idCard = getIdCard(cardnumber);
+            string query = "INSERT INTO atmwithdrawals (amount, idcard) VALUES("+amount+", "+idCard+")";
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private static int getIdCard(long cardnumber)
+        {
+            string query = "SELECT idcard FROM bankcards WHERE cardnumber = " + cardnumber;
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return reader.GetInt16("idcard");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    reader.Close();
+                    connection.Close();
+                }
+            }
+            return 0;
+        }
+
+        public static double getTodayWithdrawedAmount(long cardnumber)
+        {
+            int idCard = getIdCard(cardnumber);
+            string query = "SELECT SUM(amount) FROM atmwithdrawals WHERE idcard = " + idCard + " AND atmdatetime = " + new DateTime();
+            MySqlConnection connection = getConnection();
+            if (connection != null)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    connection.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return reader.GetDouble("amount");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    reader.Close();
+                    connection.Close();
+                }
+            }
+            return 0;
+        }
     }
 }

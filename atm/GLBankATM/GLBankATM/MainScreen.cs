@@ -13,7 +13,7 @@ namespace GLBankATM
 {
     public enum States
     {
-        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD, BALANCE, CHANGEPIN
+        LANGUAGE, ENTERPIN, PINOK, PINWRONG, BLOCKEDCARD, BALANCE, CHANGEPIN, WITHDRAW, WITHDRAW_CUSTOM
     }
 
     public enum Language
@@ -23,17 +23,18 @@ namespace GLBankATM
 
     public partial class MainScreen : Form
     {
-        private long id;       
+        private long cardNumber;       
         private Language language;
         private States state;
-        private string pinCode = "";    
+        private string pinCode = "";
+        private string amountToWithDraw = "";
 
-        public MainScreen(long id)
+        public MainScreen(long cardNumber)
         {
             InitializeComponent();
             this.CenterToScreen();
             changeState(States.LANGUAGE);                        
-            this.id = id;
+            this.cardNumber = cardNumber;
         }
 
         private void changeState(States state)
@@ -52,7 +53,7 @@ namespace GLBankATM
             lblCenter.Text = "";
             lblCenterBottom.Text = "";
             btnRight4.Enabled = true;
-            if(state == States.BALANCE || state == States.CHANGEPIN)
+            if(state == States.BALANCE || state == States.CHANGEPIN || state == States.WITHDRAW || state == States.WITHDRAW_CUSTOM)
             {
                 btnLeft4.Enabled = true;
                 if (this.language == Language.ENG)
@@ -73,67 +74,58 @@ namespace GLBankATM
                     break;
 
                 case States.BLOCKEDCARD:
-                    if (language == Language.ENG)
-                        lblCenterBottom.Text = "CARD BLOCKED";                
-                    else
-                        lblCenterBottom.Text = "KARTA ZABLOKOVANA";
+                    lblCenterBottom.Text = Languages.getcardBlockedText(language);
                     lblCenterBottom.center();
                     break;
 
                 case States.ENTERPIN:
                     enableKeyboard();
-                    if (language == Language.ENG)
-                        lblCenter.Text = "Enter PIN";
-                    else
-                        lblCenter.Text = "Zadajte PIN";
+                    lblCenter.Text = Languages.getEnterPinText(language);
                     lblCenter.center();
                     break;
 
                 case States.PINOK:
+                    btnLeft2.Enabled = true;
                     btnLeft3.Enabled = true;
                     btnRight3.Enabled = true;
-                    if (language == Language.ENG)
-                    {
-                        lblLeft3.Text = "Balance";
-                        lblRight3.Text = "Change PIN";
-                    }
-                    else
-                    {
-                        lblLeft3.Text = "Zostatok";
-                        lblRight3.Text = "Zmena PIN";
-                    }
+                    lblLeft2.Text = Languages.getmenuWithDrawText(language);
+                    lblLeft3.Text = Languages.getmenuBalanceText(language);
+                    lblRight3.Text = Languages.getmenuPinText(language);
                     break;
 
                 case States.PINWRONG:
                     enableKeyboard();
-                    if(language == Language.ENG)
-                        lblCenter.Text = "PIN WRONG";
-                    else
-                        lblCenter.Text = "NESPRAVNY PIN";
+                    lblCenter.Text = Languages.getwrongPinText(language);
                     lblCenter.center();
                     break;
 
                 case States.BALANCE:
-                    if (language == Language.ENG)
-                        lblCenter.Text = "Balance";
-                    else
-                        lblCenter.Text = "Zostatok na ucte";
+                    lblCenter.Text = Languages.getmenuBalanceText(language);
                     lblCenter.center();
-                    lblCenterBottom.Text = "" + Database.getBalance(id) + "€";
+                    lblCenterBottom.Text = "" + Database.getBalance(cardNumber) + "€";
                     lblCenterBottom.center();
                     break;
 
                 case States.CHANGEPIN:
                     enableKeyboard();
-                    if(language == Language.ENG)
-                    {
-                        lblCenter.Text = "Enter new PIN:";                        
-                    }
-                    else
-                    {
-                        lblCenter.Text = "Zadaj novy PIN: ";                        
-                    }                    
+                    lblCenter.Text = Languages.getchangePinText(language);                                         
                     lblCenter.center();                    
+                    break;
+
+                case States.WITHDRAW:
+                    btnLeft1.Enabled = true;
+                    btnLeft2.Enabled = true;
+                    btnLeft3.Enabled = true;
+                    btnRight2.Enabled = true;
+                    lblLeft1.Text = "10";
+                    lblLeft2.Text = "20";
+                    lblLeft3.Text = "50";
+                    lblRight2.Text = Languages.getotherAmountText(language);
+                    break;
+
+                case States.WITHDRAW_CUSTOM:
+                    enableKeyboard();
+                    lblCenter.Text = Languages.getenterValueText(language);
                     break;
             }
         }
@@ -143,7 +135,7 @@ namespace GLBankATM
             if (this.state.Equals(States.LANGUAGE))
             {
                 language = Language.ENG;
-                if (Database.isCardBlocked(id))
+                if (Database.isCardBlocked(cardNumber))
                     changeState(States.BLOCKEDCARD);
                 else
                 {
@@ -159,7 +151,7 @@ namespace GLBankATM
             if (this.state.Equals(States.LANGUAGE))
             {
                 language = Language.SVK;
-                if (Database.isCardBlocked(id))
+                if (Database.isCardBlocked(cardNumber))
                     changeState(States.BLOCKEDCARD);
                 else
                 {
@@ -188,137 +180,253 @@ namespace GLBankATM
             btnCancel.Enabled = true;
         }
 
+        private void printSuccessWithdrawMessage()
+        {
+            lblCenterBottom.Text = Languages.gettakeMoneyText(language);
+            lblCenterBottom.center();
+        }
+
+        private void printNotEnoughMoneyMessage()
+        {
+            if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenter.Text = Languages.getnotEnoughMoneyText(language);
+                lblCenter.center();
+            }
+            else
+            {
+                lblCenterBottom.Text = Languages.getnotEnoughMoneyText(language);
+                lblCenterBottom.center();
+            }
+        }
+
+        private void printBadAmountMessage()
+        {
+            lblCenter.Text = Languages.getbadAmountText(language);
+            lblCenter.center();
+        }
+
         private void btn1_Click(object sender, EventArgs e)
         {
-            if((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '1';
+                this.pinCode += '1';
+            }
+            else if(this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "1";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '1';
             }
         }
 
         private void btn2_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '2';
+                this.pinCode += '2';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "2";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '2';
             }
         }
 
         private void btn3_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '3';
+                this.pinCode += '3';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "3";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '3';
             }
         }
 
         private void btn4_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '4';
+                this.pinCode += '4';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "4";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '4';
             }
         }
 
         private void btn5_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '5';
+                this.pinCode += '5';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "5";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '5';
             }
         }
 
         private void btn6_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '6';
+                this.pinCode += '6';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "6";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '6';
             }
         }
 
         private void btn7_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '7';
+                this.pinCode += '7';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "7";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '7';
             }
         }
 
         private void btn8_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '8';
+                this.pinCode += '8';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "8";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '8';
             }
         }
 
         private void btn9_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '9';
+                this.pinCode += '9';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "9";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '9';
             }
         }
 
         private void btn0_Click(object sender, EventArgs e)
         {
-            if ((States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state) && pinCode.Length < 4)
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN)) && this.pinCode.Length < 4)
             {
                 lblCenterBottom.Text += "*";
                 lblCenterBottom.center();
-                pinCode += '0';
+                this.pinCode += '0';
+            }
+            else if (this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                lblCenterBottom.Text += "0";
+                lblCenterBottom.center();
+                this.amountToWithDraw += '0';
             }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            if (States.ENTERPIN == state || States.PINWRONG == state || States.CHANGEPIN == state)
+            if (this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG) || this.state.Equals(States.CHANGEPIN) || this.state.Equals(States.WITHDRAW_CUSTOM))
             {
                 lblCenterBottom.Text = "";
-                pinCode = "";
-            }
+                this.pinCode = "";
+                this.amountToWithDraw = "";
+            }            
         }
 
         private void btnOk_Click(object sender, EventArgs e)
-        {
-            if ((States.ENTERPIN == state || States.PINWRONG == state) && pinCode.Length == 4)
+        {            
+            if ((this.state.Equals(States.ENTERPIN) || this.state.Equals(States.PINWRONG)) && this.pinCode.Length == 4)
             {              
-                int pin = int.Parse(pinCode);
-                if (Database.isPinCorrect(pin, id))
+                int pin = int.Parse(this.pinCode);
+                if (Database.isPinCorrect(pin, cardNumber))
                 {
                     changeState(States.PINOK);
-                    pinCode = "";
+                    this.pinCode = "";
                 }
                 else
                 {
-                    if (Database.getIncorrectPinAttempts(id) > 2)
+                    if (Database.getIncorrectPinAttempts(cardNumber) > 2)
                     {
-                        Database.blockCard(id);
+                        Database.blockCard(cardNumber);
                         changeState(States.BLOCKEDCARD);
                     }
                     else
                     {
-                        pinCode = "";
+                        this.pinCode = "";
                         changeState(States.PINWRONG);
                     }
+                }
+            }
+            else if(this.state.Equals(States.CHANGEPIN) && this.pinCode.Length == 4)
+            {
+                int pin = int.Parse(this.pinCode);
+                Database.updatePin(pin, cardNumber);
+                lblCenter.Text = Languages.getpinChangedText(language);
+                lblCenter.center();
+                lblCenterBottom.Text = "";
+            }
+            else if(this.state.Equals(States.WITHDRAW_CUSTOM))
+            {
+                int value = int.Parse(this.amountToWithDraw);
+                this.amountToWithDraw = "";                
+                if(value % 5 == 0)
+                {
+                    if(Database.getBalance(cardNumber) >= value)
+                    {
+                        Database.subtractMoneyFromAccount(value, cardNumber);
+                        printSuccessWithdrawMessage();
+                    }
+                    else
+                    {
+                        printNotEnoughMoneyMessage();
+                    }
+                }
+                else
+                {
+                    printBadAmountMessage();
                 }
             }
         }
@@ -329,6 +437,18 @@ namespace GLBankATM
             {
                 changeState(States.BALANCE);
             }
+            else if (this.state.Equals(States.WITHDRAW))
+            {
+                if (Database.getBalance(cardNumber) >= 50)
+                {
+                    Database.subtractMoneyFromAccount(50, cardNumber);
+                    printSuccessWithdrawMessage();
+                }
+                else
+                {
+                    printNotEnoughMoneyMessage();
+                }
+            }
         }
 
         private void btnRight3_Click(object sender, EventArgs e)
@@ -336,6 +456,50 @@ namespace GLBankATM
             if (this.state.Equals(States.PINOK))
             {
                 changeState(States.CHANGEPIN);
+            }
+        }
+
+        private void btnLeft2_Click(object sender, EventArgs e)
+        {
+            if(this.state.Equals(States.PINOK))
+            {
+                changeState(States.WITHDRAW);
+            }
+            else if(this.state.Equals(States.WITHDRAW))
+            {
+                if (Database.getBalance(cardNumber) >= 20)
+                {
+                    Database.subtractMoneyFromAccount(20, cardNumber);
+                    printSuccessWithdrawMessage();                    
+                }
+                else
+                {
+                    printNotEnoughMoneyMessage();
+                }
+            }
+        }
+
+        private void btnLeft1_Click(object sender, EventArgs e)
+        {
+            if(this.state.Equals(States.WITHDRAW))
+            {
+                if(Database.getBalance(cardNumber) >= 10)
+                {
+                    Database.subtractMoneyFromAccount(10, cardNumber);
+                    printSuccessWithdrawMessage();
+                }
+                else
+                {
+                    printNotEnoughMoneyMessage();
+                }
+            }
+        }
+
+        private void btnRight2_Click(object sender, EventArgs e)
+        {
+            if(this.state.Equals(States.WITHDRAW))
+            {
+                changeState(States.WITHDRAW_CUSTOM);
             }
         }
     }

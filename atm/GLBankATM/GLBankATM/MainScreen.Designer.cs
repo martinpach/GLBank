@@ -49,16 +49,16 @@
             this.btn0 = new System.Windows.Forms.Button();
             this.btnOk = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblRight3 = new System.Windows.Forms.Label();
+            this.lblRight2 = new System.Windows.Forms.Label();
+            this.lblRight1 = new System.Windows.Forms.Label();
+            this.lblCenterBottom = new System.Windows.Forms.Label();
             this.lblCenter = new System.Windows.Forms.Label();
             this.lblRight4 = new System.Windows.Forms.Label();
             this.lblLeft4 = new System.Windows.Forms.Label();
             this.lblLeft3 = new System.Windows.Forms.Label();
             this.lblLeft2 = new System.Windows.Forms.Label();
             this.lblLeft1 = new System.Windows.Forms.Label();
-            this.lblCenterBottom = new System.Windows.Forms.Label();
-            this.lblRight1 = new System.Windows.Forms.Label();
-            this.lblRight2 = new System.Windows.Forms.Label();
-            this.lblRight3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,6 +71,7 @@
             this.btnLeft1.Size = new System.Drawing.Size(63, 55);
             this.btnLeft1.TabIndex = 0;
             this.btnLeft1.UseVisualStyleBackColor = false;
+            this.btnLeft1.Click += new System.EventHandler(this.btnLeft1_Click);
             // 
             // btnLeft2
             // 
@@ -81,6 +82,7 @@
             this.btnLeft2.Size = new System.Drawing.Size(63, 55);
             this.btnLeft2.TabIndex = 1;
             this.btnLeft2.UseVisualStyleBackColor = false;
+            this.btnLeft2.Click += new System.EventHandler(this.btnLeft2_Click);
             // 
             // btnLeft3
             // 
@@ -123,6 +125,7 @@
             this.btnRight2.Size = new System.Drawing.Size(63, 55);
             this.btnRight2.TabIndex = 5;
             this.btnRight2.UseVisualStyleBackColor = false;
+            this.btnRight2.Click += new System.EventHandler(this.btnRight2_Click);
             // 
             // btnRight3
             // 
@@ -298,6 +301,42 @@
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             // 
+            // lblRight3
+            // 
+            this.lblRight3.AutoSize = true;
+            this.lblRight3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight3.Location = new System.Drawing.Point(254, 185);
+            this.lblRight3.Name = "lblRight3";
+            this.lblRight3.Size = new System.Drawing.Size(0, 25);
+            this.lblRight3.TabIndex = 12;
+            // 
+            // lblRight2
+            // 
+            this.lblRight2.AutoSize = true;
+            this.lblRight2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight2.Location = new System.Drawing.Point(242, 100);
+            this.lblRight2.Name = "lblRight2";
+            this.lblRight2.Size = new System.Drawing.Size(0, 25);
+            this.lblRight2.TabIndex = 11;
+            // 
+            // lblRight1
+            // 
+            this.lblRight1.AutoSize = true;
+            this.lblRight1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblRight1.Location = new System.Drawing.Point(278, 16);
+            this.lblRight1.Name = "lblRight1";
+            this.lblRight1.Size = new System.Drawing.Size(0, 25);
+            this.lblRight1.TabIndex = 10;
+            // 
+            // lblCenterBottom
+            // 
+            this.lblCenterBottom.AutoSize = true;
+            this.lblCenterBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblCenterBottom.Location = new System.Drawing.Point(78, 173);
+            this.lblCenterBottom.Name = "lblCenterBottom";
+            this.lblCenterBottom.Size = new System.Drawing.Size(0, 37);
+            this.lblCenterBottom.TabIndex = 9;
+            // 
             // lblCenter
             // 
             this.lblCenter.AutoSize = true;
@@ -351,42 +390,6 @@
             this.lblLeft1.Name = "lblLeft1";
             this.lblLeft1.Size = new System.Drawing.Size(0, 25);
             this.lblLeft1.TabIndex = 0;
-            // 
-            // lblCenterBottom
-            // 
-            this.lblCenterBottom.AutoSize = true;
-            this.lblCenterBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblCenterBottom.Location = new System.Drawing.Point(78, 173);
-            this.lblCenterBottom.Name = "lblCenterBottom";
-            this.lblCenterBottom.Size = new System.Drawing.Size(0, 37);
-            this.lblCenterBottom.TabIndex = 9;
-            // 
-            // lblRight1
-            // 
-            this.lblRight1.AutoSize = true;
-            this.lblRight1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight1.Location = new System.Drawing.Point(278, 16);
-            this.lblRight1.Name = "lblRight1";
-            this.lblRight1.Size = new System.Drawing.Size(0, 25);
-            this.lblRight1.TabIndex = 10;
-            // 
-            // lblRight2
-            // 
-            this.lblRight2.AutoSize = true;
-            this.lblRight2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight2.Location = new System.Drawing.Point(290, 100);
-            this.lblRight2.Name = "lblRight2";
-            this.lblRight2.Size = new System.Drawing.Size(0, 25);
-            this.lblRight2.TabIndex = 11;
-            // 
-            // lblRight3
-            // 
-            this.lblRight3.AutoSize = true;
-            this.lblRight3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblRight3.Location = new System.Drawing.Point(254, 185);
-            this.lblRight3.Name = "lblRight3";
-            this.lblRight3.Size = new System.Drawing.Size(0, 25);
-            this.lblRight3.TabIndex = 12;
             // 
             // MainScreen
             // 
